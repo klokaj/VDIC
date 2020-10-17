@@ -31,7 +31,23 @@ module top;
                           or_op = 3'b001, 
                           add_op = 3'b100,
                           sub_op = 3'b101
-                          }
+                          } operation_t;
+	
+	function bit[3:0] get_crc(bit[67:0] data);
+		int i = 67;
+		bit[3:0] crc = 0;
+		
+		while(i > 0) begin
+		crc = crc
+		
+		end
+		
+		
+	
+	endfunction
+	
+	
+					
    
    bit  [31:0] din_A;  //data in  A
    bit  [31:0] din_B;	// data in B
