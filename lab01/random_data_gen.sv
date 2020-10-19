@@ -31,26 +31,7 @@
    endfunction : get_data
    
    
-   function bit [7:0] get_to_send();
-	   bit[5:0] r;
-	   r = $random; 
-	   //debug - delete following line
-	   //return 8'b1111_1111;
-	   
-	   if(r == 0) return $random;
-	   else return 8'b1111_1111;
-   endfunction;
-   
-   function bit get_bad_crc();
-	   bit[5:0] r;
-	   r = $random; 
-	   
-	   //debug - delete following line
-	   //return 0;
-	   
-	   if(r == 0) return 1;
-	   else return 0;
-   endfunction;
+
    
    
    
@@ -64,22 +45,10 @@
 	  q.delete();
 	   
 	  //generate A data,  1/16 chance that data will be zeros or ones
-      zero_ones = $random;
-      if (zero_ones == 4'b0000)
-        A =  32'h00_00_00_00;
-      else if (zero_ones == 4'b1111)
-        A =  32'hFF_FF_FF_FF;
-      else
-        A =  $random; 
+        A =  get_data();
       
       //generate B data,  1/16 chance that data will be zeros or ones
-      zero_ones = $random;
-      if (zero_ones == 4'b0000)
-        B =  32'h00_00_00_00;
-      else if (zero_ones == 4'b1111)
-        B =  32'hFF_FF_FF_FF;
-      else
-        B =  $random; 
+        B =  get_data(); 
    
       
       data_packet = {B, A};
