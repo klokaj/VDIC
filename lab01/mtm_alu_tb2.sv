@@ -45,7 +45,8 @@ module top;
 	typedef enum bit[5:0] {
 		data_err = 6'b100100,
 		crc_err = 6'b010010,
-		op_err = 6'b001001
+		op_err = 6'b001001,
+		no_err = 6'b000000
 	} err_flag_t;
 	
 					
@@ -228,7 +229,23 @@ module top;
       else
         return $random;
    endfunction : get_data
-
+   
+   function bit [7:0] get_to_send();
+	   bit[5:0] r;
+	   r = $random; 
+	   
+	   if(r == 0) return $random;
+	   else return 8'b1111_1111;
+   endfunction;
+   
+   function bit get_bad_crc();
+	   bit[5:0] r;
+	   r = $random; 
+	   
+	   if(r == 0) 1;
+	   else return 0;
+   endfunction;
+   
 //---------------------------------
 // CRC calc function
 	function bit[3:0] get_tx_crc(input bit[67:0] data);
@@ -255,28 +272,11 @@ task tx_data(input bit[10:0] data);
 	end
 	@(negedge clk); 
 	@(negedge clk); 
-	@(negedge clk); 
-	@(negedge clk); 
-	@(negedge clk); 
-	@(negedge clk); 
 endtask
 
 
-/*task rx_data(output bit[10:0] rx);
-	int i = 10;
-	bit[10:0] rx;
-	@(negedge sout)
-	for(i = 8; i >=0; i--) begin
-		@(negedge clk);
-		rx[i] = sout;
-	end
-	@(negedge clk); 
-	
-endtask
-*/
 
   function bit [3:0] crc_calc (input [67:0] data);
-
     bit [3:0] cr = 0;
     reg [67:0] d;
     reg [3:0] c;
@@ -284,7 +284,6 @@ endtask
   begin
     d = data;
     c = cr;
-
     newcrc[0] = d[66] ^ d[64] ^ d[63] ^ d[60] ^ d[56] ^ d[55] ^ d[54] ^ d[53] ^ d[51] ^ d[49] ^ d[48] ^ d[45] ^ d[41] ^ d[40] ^ d[39] ^ d[38] ^ d[36] ^ d[34] ^ d[33] ^ d[30] ^ d[26] ^ d[25] ^ d[24] ^ d[23] ^ d[21] ^ d[19] ^ d[18] ^ d[15] ^ d[11] ^ d[10] ^ d[9] ^ d[8] ^ d[6] ^ d[4] ^ d[3] ^ d[0] ^ c[0] ^ c[2];
     newcrc[1] = d[67] ^ d[66] ^ d[65] ^ d[63] ^ d[61] ^ d[60] ^ d[57] ^ d[53] ^ d[52] ^ d[51] ^ d[50] ^ d[48] ^ d[46] ^ d[45] ^ d[42] ^ d[38] ^ d[37] ^ d[36] ^ d[35] ^ d[33] ^ d[31] ^ d[30] ^ d[27] ^ d[23] ^ d[22] ^ d[21] ^ d[20] ^ d[18] ^ d[16] ^ d[15] ^ d[12] ^ d[8] ^ d[7] ^ d[6] ^ d[5] ^ d[3] ^ d[1] ^ d[0] ^ c[1] ^ c[2] ^ c[3];
     newcrc[2] = d[67] ^ d[66] ^ d[64] ^ d[62] ^ d[61] ^ d[58] ^ d[54] ^ d[53] ^ d[52] ^ d[51] ^ d[49] ^ d[47] ^ d[46] ^ d[43] ^ d[39] ^ d[38] ^ d[37] ^ d[36] ^ d[34] ^ d[32] ^ d[31] ^ d[28] ^ d[24] ^ d[23] ^ d[22] ^ d[21] ^ d[19] ^ d[17] ^ d[16] ^ d[13] ^ d[9] ^ d[8] ^ d[7] ^ d[6] ^ d[4] ^ d[2] ^ d[1] ^ c[0] ^ c[2] ^ c[3];
@@ -298,7 +297,6 @@ always begin
 	if(reset_n == 1) begin
 		i = 0;
 		@(negedge sout);
-
 		for(i = 10; i >= 0; i--) begin
 		@(negedge clk);
 		rx_shadow[i] = sout;
@@ -316,9 +314,12 @@ end
 
 
 
+bit[7:0] to_send; 
+bit bad_crc;
 //------------------------
 // Tester main
    initial begin : tester
+	  
 	  sin = 1'b1;	
       reset_n = 1'b0;
       @(negedge clk);
@@ -331,35 +332,32 @@ end
          op_set = get_op();
          A = get_data();
          B = get_data();
-	     crc = crc_calc({B, A, 1'b1, op_set});
+	     to_send = get_to_send();
+	      bad_crc = get_bad_crc();
+	      if(bad_crc) crc = $rand;
+	      else crc = crc_calc({B, A, 1'b1, op_set});
+	      
+	     
 	     $display("CRC =  %d", crc);
-
 	      
-	      
+	     
+	     
 	     ctl_in = {1'b0, op_set, crc};
 	     //send B
-         tx_data( {2'b00, B[31:24], 1'b1});
-	     tx_data( {2'b00, B[23:16], 1'b1});
-	     tx_data( {2'b00, B[15:8], 1'b1});
-	     tx_data( {2'b00, B[7:0], 1'b1});
+	     if(to_send[7]) tx_data( {2'b00, B[31:24], 1'b1});
+	     if(to_send[6]) tx_data( {2'b00, B[23:16], 1'b1});
+	     if(to_send[5]) tx_data( {2'b00, B[15:8], 1'b1});
+	     if(to_send[4]) tx_data( {2'b00, B[7:0], 1'b1});
          
          //send A
-         tx_data( {2'b00, A[31:24], 1'b1});
-	     tx_data( {2'b00, A[23:16], 1'b1});
-	     tx_data( {2'b00, A[15:8], 1'b1});
-	     tx_data( {2'b00, A[7:0], 1'b1});
+         if(to_send[3])	tx_data( {2'b00, A[31:24], 1'b1});
+	     if(to_send[2])tx_data( {2'b00, A[23:16], 1'b1});
+	     if(to_send[1])tx_data( {2'b00, A[15:8], 1'b1});
+	     if(to_send[0])tx_data( {2'b00, A[7:0], 1'b1});
 	     
 	     //send cmd
 	     tx_data( {2'b01, ctl_in, 1'b1});
          
-         
-         //@(posedge new_rx);
-	    // new_rx = 0;
-         //while(rx[9] != 0) begin
-        // 	@(posedge new_rx);
-	    //     new_rx = 0;
-	    // end
-	    // done = 1;
       end
       $finish;
    end : tester
@@ -368,217 +366,266 @@ end
 // Scoreboard
 //------------------------------------------------------------------------------
 
-
-bit [10:0] sin_monitor;
-bit [10:0] sout_monitor;
-int sin_monitor_ctr;
-int sin_capturing;
-int sout_capturing;
-int sout_monitor_ctr;
-
-bit [8:0] sin_queue [$];
-bit [8:0] sout_queue [$];
-
-
-
+bit correct;
 bit [31:0] A_monitor, B_monitor, C_monitor;
 //---------------------------
 //Monitore mtm_Alu inputs / outputs. Capture, deserialize and push data into a queues
 //---------------------------
 
-function dut_monitor();
-	//sin monitor
-	if((sin_capturing == 1) | (sin == 0)) begin
-		sin_capturing = 1;
-		sin_monitor[10 - sin_monitor_ctr] = sin;
-		sin_monitor_ctr++;
-		if(sin_monitor_ctr > 10) begin
-			sin_monitor_ctr = 0;
-			sin_capturing = 0;
-			 sin_queue.push_back(sin_monitor[9:1]);
+bit s_monitor_working = 0;
+
+class s_monitor;
+	bit capturing;
+	int capturing_ctr;
+	bit [10:0] captured_data;
+	bit[8:0] q [$];
+	
+	function new();
+		capturing = 0;
+		capturing_ctr = 0;
+		captured_data = 0;
+		q = {};
+	endfunction;
+	
+	function sample(bit state);
+		if((capturing == 1) | (state == 0)) begin
+			s_monitor_working = !s_monitor_working;
+			capturing = 1;
+			captured_data[10 - capturing_ctr] = state;
+			capturing_ctr++;
+			if(capturing_ctr > 10) begin
+				capturing_ctr = 0;
+				capturing = 0;
+				q.push_back(captured_data[9:1]);
+			end
 		end
-	end
-	
-	//sout monitor
-	if((sout_capturing == 1) | (sout == 0)) begin
-		sout_capturing = 1;
-		sout_monitor[10 - sout_monitor_ctr] = sout;
-		sout_monitor_ctr++;
-		if(sout_monitor_ctr > 10) begin
-			sout_monitor_ctr = 0;
-			sout_capturing = 0;
-			sout_queue.push_back(sout_monitor[9:1]);
+		else begin
+			capturing = 0;
+			s_monitor_working = 0;
+			capturing_ctr = 0;
 		end
-	end
-endfunction
+	endfunction
 
-function bit err_recieved();
-	int size = sout_queue.size();
-	int j;
-	if(size == 0) return 0;
-	
-	
-	if(size >= 4) j = 4;
-	else j  = size;
-	
-	for(int i = 0; i < j; i++) begin
-		if(sout_queue[i][8] == 1)	return 1;
-	end
-	
-	return 0;
-endfunction
+	function bit is_data_frame(int index);
+		bit [8:0] tmp;
+		if(index > q.size()) return 0;
+		tmp = q[index];
+		return !tmp[8];
+	endfunction
 
+	function bit is_ctl_frame(int index);
+		bit [8:0] tmp;
+		if(index > q.size()) return 0;
+		tmp = q[index];
+		return tmp[8];
+	endfunction
 
-int correct = 0;
-function bit data_ready();
-	   	if(sin_queue.size() >= 9)
-		   if((sout_queue.size() >= 5) | (err_recieved()))
-			   return 1;
-	 return 0;	
-endfunction
+	function bit is_ctl_frame_before_index(int index);
+		//int j = (index-1 > q.size()) ? q.size() : index-1;
+		int j;
+		if(q.size > index) j = index;
+		else j = q.size;
+		
+		for(int i = 0; i < j; i++)begin
+			if(is_ctl_frame(i)) return 1;	
+		end
+		return 0;
+	endfunction
+	
+	function bit is_first_ctl_frame_at_index(int index);
+		if(is_ctl_frame(index) == 0) return 0;
+		if(is_ctl_frame_before_index(index-1)) return 0;
+		return 1;
+	endfunction
+	
+	function bit is_ctl_frame_inside();
+		return is_ctl_frame_before_index(q.size());
+	endfunction;	
+endclass
 
 
 
 class input_data;
 	bit [31:0] A;
 	bit [31:0] B;
-	int data_ok;
 	bit [7:0] ctl;
-	bit ctl_ok;
-	int crc_ok;
-	operation_t op; 
+	operation_t op;
+	bit [3:0] crc;
+	bit format_ok;
+	bit op_ok; 
+	bit crc_ok;
 	
-	function reset_data();
-		data_ok = 1;
-		ctl_ok = 1;
-		op = rsv_op;
-		A = 0;
-		B = 0;
-		ctl = 0;	
+	s_monitor in_monitor = new;
+	
+	//function new();
+	//	in_monitor = new;
+	//endfunction
+	
+	//samples series in data and stores them in queue
+	function sample();
+		in_monitor.sample(sin);
 	endfunction
+	//cheks if data are ready (ctl frame in buffor)
+	function bit rdy();
+		//if(in_monitor.q.size() >= 9) return 1;	//min 9 frames recieved
+		//return in_monitor.is_ctl_frame_before_index(8);
+		return in_monitor.is_ctl_frame_inside();
+	endfunction
+	
 
-	function queue_decode();
-		bit [8:0] tmp;
-		int i = 0;
-		reset_data();
+	function decode_data();
+		bit [8:0] tmp = 0;
+		format_ok = in_monitor.is_first_ctl_frame_at_index(8);
+		//reads data from queue
 		
-		while(i < 4) begin
-			tmp = sin_queue.pop_front();
-			if(tmp[8] == 1) begin
-				data_ok = 0;
-				break;
+		if(format_ok) begin
+			for(int i = 0; i < 4; i++) begin
+				tmp = in_monitor.q.pop_front();
+				B[31-8*i -:8] = tmp[7:0];
 			end
-			B[31-8*i -:8] = tmp;
-			i++;
-		end
-		
-		i = 0;
-		while((data_ok == 1) & (i < 4)) begin
-			tmp = sin_queue.pop_front();
-			if(tmp[8] == 1) begin
-				data_ok = 0;
-				break;
+			
+			for(int i = 0; i < 4; i++) begin
+				tmp = in_monitor.q.pop_front();
+				A[31-8*i -:8] = tmp[7:0];
 			end
-			A[31-8*i -:8] = tmp;
-			i++;
-		end
-		
-		if(data_ok == 1) tmp = sin_queue.pop_front();
-		
-		if(tmp[8] == 1)begin
+			
+			tmp = in_monitor.q.pop_front();
 			ctl = tmp[7:0];
-			if(tmp[6:4] == 3'b000) op = and_op;
-			if(tmp[6:4] == 3'b001) op = or_op;
-			if(tmp[6:4] == 3'b100) op = add_op;
-			if(tmp[6:4] == 3'b101) op = sub_op;
 		end
 		else begin
-			ctl_ok = 0;	
+			//tmp = in_monitor.q.pop_front();
+			while(in_monitor.is_data_frame(0)) begin
+				in_monitor.q.pop_front();
+			end
+			if(in_monitor.is_ctl_frame(0)) begin
+				tmp = in_monitor.q.pop_front();
+				ctl = tmp[7:0];
+			end
+			else ctl = 0;
 		end
 		
-		
+		handle_op();
+		handle_crc();
 		
 	endfunction
 	
+	function handle_op();
+		if(ctl[6:4] == 3'b000) op = and_op;
+		else if(ctl[6:4] == 3'b001) op = or_op;
+		else if(ctl[6:4] == 3'b100) op = add_op;
+		else if(ctl[6:4] == 3'b101) op = sub_op;
+		else op = rsv_op;
+		op_ok = !(op == rsv_op);
+	endfunction
 	
+	function handle_crc();
+		bit [3:0] expected_crc;
+		crc = ctl[3:0];
+		
+		expected_crc = crc_calc({B, A, 1'b1, ctl[6:4]});
+		crc_ok = (expected_crc == crc);
+	endfunction
 endclass
 
 
-class output_data; 
-	bit[31:0] C;
-	int data_ok;
-	bit[7:0] ctl;
-	int ctl_ok;
-	int error;
-	flag_t f;
+
+class output_data;
+	bit [31:0] C;
+	bit [7:0] ctl;
+	bit format_ok;
+	flag_t flag;
+	err_flag_t error_f;
+	bit error;
 	
-	function reset_data();
-		data_ok = 1;
-		ctl_ok = 1;
-		C = 0;
-		ctl = 0;
-		error = 0;
-		f = no_f;
+	s_monitor out_monitor = new;
+	//function new();
+	//	out_monitor = new(m);
+	//endfunction
+	
+	//samples series in data and stores them in queue
+	function sample();
+		out_monitor.sample(sout);
+	endfunction
+	//cheks if data are ready (ctl frame in buffor)
+	function bit rdy();
+		//if(in_monitor.q.size() >= 9) return 1;	//min 9 frames recieved
+		//return in_monitor.is_ctl_frame_before_index(8);
+		return out_monitor.is_ctl_frame_inside();
 	endfunction
 	
-	
-	function queue_decode();
-		bit [8:0] tmp;
-		int i = 0;
-		reset_data();
-		
-		while(i < 4) begin
-			tmp = sout_queue.pop_front();
-			if(tmp[8] == 1) begin
-				data_ok = 0;
-				break;
+
+	function decode_data();
+		bit [8:0] tmp = 0;
+		format_ok = out_monitor.is_first_ctl_frame_at_index(4);
+		//reads data from queue
+		if(format_ok == 1) begin
+			for(int i = 0; i < 4; i++) begin
+				tmp = out_monitor.q.pop_front();
+				C[31-8*i -:8] = tmp[7:0];
 			end
-			C[31-8*i -:8] = tmp;
-			i++;
-		end
-		
-		if(data_ok == 1) tmp = sout_queue.pop_front();
-		
-		if(tmp[8] == 1)begin
+			tmp = out_monitor.q.pop_front();
 			ctl = tmp[7:0];
-			if(ctl[7] == 0) begin
-				if(ctl[6:3]);
-			end
-			if(tmp[6] == 1) f = carry_f;
-			else if(tmp[5] == 1) f = ovf_f;
-			else if(tmp[4] == 1) f = zero_f;
-			else if(tmp[3] == 1) f = neg_f;
-			else f = no_f;
 		end
 		else begin
-			ctl_ok = 0;	
+			//tmp = out_monitor.q.pop_front();
+			while(out_monitor.is_data_frame(0)) begin
+				out_monitor.q.pop_front();
+			end
+			if(out_monitor.is_ctl_frame(0)) begin
+				tmp = out_monitor.q.pop_front();
+				ctl = tmp[7:0];
+			end
+			else ctl = 0;
 		end
-	
 		
-	endfunction	
-endclass	
- 
- 
+		
+		handle_error();
+		handle_flag();
+	endfunction
+	
+	function handle_error();
+		error = ctl[7];
+		error_f = no_err;
+		if(error) begin
+			if(ctl[6] == 1) error_f = data_err;
+			else if(ctl[5] == 1) error_f = crc_err;
+			else if(ctl[4] == 1) error_f = op_err;
+			else if(ctl[3] == 1) error_f = data_err;
+			else if(ctl[2] == 1) error_f = crc_err;
+			else if(ctl[1] == 1) error_f = op_err;
+		end
+	endfunction
+	
+	function handle_flag();
+		flag = no_f;
+		if(!error) begin
+			if(ctl[6] == 1) flag = carry_f;
+			else if(ctl[5] == 1) flag = ovf_f;
+			else if(ctl[4] == 1) flag = zero_f;
+			else if(ctl[3] == 1) flag = neg_f;
+			else flag = no_f;
+		end
+	endfunction
+endclass
+
+bit smple;
+bit ins;
 bit [31:0] expected;
+input_data DIN = new;
+output_data DOUT = new;
 
 initial begin
-	
-	
-	input_data DIN = new;
-	output_data DOUT = new;
-	
-	
-	sin_monitor_ctr = 0;
-	sout_monitor_ctr = 0;
-	sin_capturing = 0;
-	sout_capturing = 0;
-
    	while(1) begin
+	   	smple = !smple;
 	   	@(negedge clk);
-	   	dut_monitor();
-	   	if(data_ready()) begin
-		   	DIN.queue_decode();
-		   	DOUT.queue_decode();
+	   	DIN.sample();
+	    DOUT.sample();
+	   	@(posedge clk);
+	   	
+	   	if(DIN.rdy() & DOUT.rdy()) begin
+		   	ins = !ins;
+		   	DIN.decode_data();
+		   	DOUT.decode_data();
 		   	
 		   	A_monitor = DIN.A;
 		   	B_monitor = DIN.B;
@@ -603,6 +650,4 @@ initial begin
 	   	end  
 	end	 
 end
-
-   
 endmodule : top
