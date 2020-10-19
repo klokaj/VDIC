@@ -242,7 +242,7 @@ module top;
 	   bit[5:0] r;
 	   r = $random; 
 	   
-	   if(r == 0) 1;
+	   if(r == 0) return 1;
 	   else return 0;
    endfunction;
    
@@ -334,7 +334,7 @@ bit bad_crc;
          B = get_data();
 	     to_send = get_to_send();
 	      bad_crc = get_bad_crc();
-	      if(bad_crc) crc = $rand;
+	      if(bad_crc) crc = $random;
 	      else crc = crc_calc({B, A, 1'b1, op_set});
 	      
 	     
