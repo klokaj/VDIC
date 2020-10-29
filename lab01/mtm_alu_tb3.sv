@@ -175,18 +175,18 @@ covergroup err_flags_cov;
 	    wildcard bins err_op = {6'b001001};
 	    bins no_err = {6'b000000};    
       }
-      
-//      payload: coverpoint payload_len{
-//	      
-//	      
-//      }
-      
- 
-      
-   endgroup
+endgroup
 
+covergroup op_after_rst_cov;
+	 option.name = "mtm alu operation after reset";
 
-
+	 ops_after_reset: coverpoint {reset_n, op_set} {
+		wildcard bins and_after_rst[] = (4'b0000 => {1'b1, and_op});
+		wildcard bins or_after_rst[] = ( 4'b0000 => {1'b1, or_op});
+		wildcard bins add_after_rst[] = ( 4'b0000 => {1'b1, add_op});
+		wildcard bins sub_after_rst[] = ( 4'b0000 => {1'b1, sub_op});
+	 }
+endgroup
 
 //------------------------------------------------------------------------------
 // coverage block instantion
@@ -195,7 +195,7 @@ covergroup err_flags_cov;
    zeros_or_ones_on_ops c_00_FF;
    flags_cov c_flags;
    err_flags_cov c_err_flags;
-
+	op_after_rst_cov c_op_after_rst; 
 
 
    initial begin : coverage
@@ -207,7 +207,7 @@ covergroup err_flags_cov;
       c_00_FF = new();
 	  c_flags = new();
 	  c_err_flags = new();
-	   
+	  c_op_after_rst = new();
       forever begin : sample_cov
          @(negedge clk);
 	     DIN.sample(sin, reset_n);
@@ -216,12 +216,10 @@ covergroup err_flags_cov;
 	     if(DIN.rdy()) begin
 		    payload_len = DIN.packet_lenght;
 		    DIN.decode_data();
-
 		    A = DIN.A;
 		    B = DIN.B;
 		    op_set = DIN.op;
-		    
-		
+		     
 		    ALU_model.calculate_response(DIN);  
 		    expected_flag = ALU_model.flags;
 		    expected_err_flag = ALU_model.err_flags;
@@ -230,8 +228,14 @@ covergroup err_flags_cov;
 		 	oc.sample();
          	c_00_FF.sample();
 		    c_flags.sample();
-		    c_err_flags.sample();     
-	     end	     
+		    c_err_flags.sample(); 
+		     c_op_after_rst.sample();
+	     end	
+	     else if(reset_n == 1'b0) begin
+		    op_set = 0;
+		 	c_op_after_rst.sample();
+		 
+		 end
       end
    end : coverage
 
@@ -255,44 +259,27 @@ covergroup err_flags_cov;
 task tx_frame(input bit [8:0] d);
 	int i;
 	bit [10:0] frame; 
-	
-	bit[4:0] rr = $random;
-	if(rr == 0) begin
-		frame = {1'b0, d, 1'b0};
-	end
-	else begin
-		frame = {1'b0, d, 1'b1};
-	end
-	//$display("tx_frame, %b", frame);
+	frame = {1'b0, d, 1'b1};
 	for(i = 10; i >=0; i--) begin
 		@(negedge clk);
 		sin = frame[i];
-
-		//$display("sin = %b", sin);
 	end
+	@(negedge clk);  
 	@(negedge clk); 
-	@(negedge clk); 
-	//@(negedge clk); 
-	//@(negedge clk); 
 endtask
 
 task tx_data(input bit [7:0] d);
-	//$display("Sending frame data = %b", d);
 	tx_frame({1'b0, d});
 endtask;
 
 task tx_command(input bit [7:0] d);
-	//$display("Sending frame command = %b", d);
 	tx_frame({1'b1, d});
 endtask;
 
-//send whole packet. last element of queue is threated as an CTL command
+//send whole packet. last element of queue is treated as an CTL command
 task tx_packet(input bit [7:0] q [$]);
 	bit [7:0] byte_to_send;
 	bit [10:0] frame_to_send;
-	
-	//$display("Sending frame size = %d", q.size());
-	
 	while(q.size() > 1) begin
 		tx_data(q.pop_front());
 	end
@@ -303,49 +290,39 @@ task tx_packet(input bit [7:0] q [$]);
 endtask
 
 
-int crc_inccorect, crc_correct;
 //------------------------
 // Tester main
    initial begin : tester
 	  bit [9:0] DUT_reset; 
 	  bit [31:0] A_in, B_in;
 	  bit [3:0] crc_in;
-	  bit [2:0] op_in;
 	  operation_t  op_set_in;
 	  bit [7:0] q [$];
-   	  bit  [7:0]  ctl_in;// in control byte
    	  
 	  sin = 1'b1;	
       reset_n = 1'b0;
       @(negedge clk);
       @(negedge clk);
-	  @(negedge clk);
-      @(negedge clk);
-	   
 	  reset_n = 1'b1;
+
       
-      repeat (1000) begin : tester_main
+      repeat (10000) begin : tester_main
          @(negedge clk);
          op_set_in = get_op();
-         
          get_data_(A_in, B_in, q);
 	     crc_in = get_crc_(A_in, B_in, op_set_in);
-	     ctl_in = {1'b0, op_set_in, crc_in};
-	     q.push_back(ctl_in);    
+	     q.push_back({1'b0, op_set_in, crc_in});    
 	     tx_packet(q); 
 	      
-	      
-	     DUT_reset = $random;
-	      
-	      if(DUT_reset == 0) begin
-		    reset_n = 1'b0;
+	      if($urandom_range(1000, 0) == 0) begin
+		  	reset_n = 1'b0;
 		    repeat(10) @(negedge clk);
 	  		reset_n = 1'b1;
 		    repeat(10) @(negedge clk);
-	     end
+		  end
+	      
+	   
       end
-      
-      //$display("percentage of correct crc =%f", (crc_correct*100)/(crc_correct+crc_inccorect));
       $finish;
    end : tester
 
@@ -372,15 +349,7 @@ function print_error_data(input_data DIN, output_data DOUT, mtm_alu_model exp);
    endcase
    
    	$display("A = %d, B = %d, C = %d", DIN.A, DIN.B, DOUT.C);
-	$display("CTL = %b, CTL_exp = %b, frame %d", DOUT.ctl, exp.ctl, framectr);
-   
-//   	$display(" A > B = %b", DIN.A > DIN.B);
-//   	$display("A[31:28] = %b", DIN.A[31:28]);
-//   	$display("B[31:28] = %b", DIN.B[31:28]);
-//   	$display("C[31:28] = %b", DOUT.C[31:28]);
-//    $display("DOUT format: %b", DOUT.format_ok);
-//    $display("DOUT format: %b", DOUT.format_ok);
-//   
+	$display("CTL = %b, CTL_exp = %b, frame %d", DOUT.ctl, exp.ctl, framectr); 
 endfunction
 
 
@@ -400,67 +369,48 @@ initial begin
 	
 	
    	while(1) begin
-	
 	   	@(negedge clk);
 	   	DIN.sample(sin, reset_n);
 	    DOUT.sample(sout, reset_n);
-	   	
-	   	//if(framectr  >=  562 && framectr <= 563) begin 
-		//   	$display("sout=%b", sout);
-		//end
-	    // if(framectr  >=  563 && framectr <= 566) begin 
-		//   $display("sout=%b", sout);
-		//   end
-	   
 
-	   	
-	   	
 	   	if(DIN.rdy() & DOUT.rdy()) begin
-//		if(framectr  >=  560 && framectr <= 566) begin 
-//		   	foreach(DIN.in_monitor.q[i]) $display("DIN[i%d]=%b", i, DIN.in_monitor.q[i]);
-//		end
-//		
-//		if(framectr  >=  560 && framectr <= 566) begin 
-//		   	foreach(DOUT.out_monitor.q[i]) $display("DOUT[i%d]=%b", i, DOUT.out_monitor.q[i]);
-//		end
-//		   	
+	
 		   	DIN.decode_data();
-		   	DOUT.decode_data();
+		    DOUT.decode_data();
 		   	
 		   	A_monitor = DIN.A;
 		   	B_monitor = DIN.B;
 		   	C_monitor = DOUT.C;
 		   	
-		 
 		   	ALU_model.calculate_response(DIN);
 
-		
 		   	if(framectr % 100 == 0) 
 		   		$display(framectr);
 		   	framectr++;
 		   	
 	
-		   	
-		   	//$display("C = %b,", DOUT.C);
-
-
-		   
-		   	if(ALU_model.ctl[7] == 1) begin
-			   if(ALU_model.ctl != DOUT.ctl)begin
-				   $display("--------------EXP_CTL_FRAME_BAD------------------");
+		   	if(DOUT.err == 1'b1) begin
+			   if(DOUT.err != ALU_model.err) begin
+				   $display("--------------EXP_FRAME_ERROR------------------");
+				   print_error_data(DIN, DOUT, ALU_model);
+			   end
+			   else if(DOUT.err_flags != ALU_model.err_flags) begin
+			   	   $display("--------------WRONG_ERROR_FLAGS------------------");
 				   print_error_data(DIN, DOUT, ALU_model);
 			   end
 		   	end
-		   	else begin
-			   	if(ALU_model.res != DOUT.C) begin
-				   	$display("--------------DATA_CTL_FRAME_OK-------------------");
-				   	print_error_data(DIN, DOUT, ALU_model);
-		   		end
-			   	else if(ALU_model.ctl != DOUT.ctl) begin
-					$display("--------------EXP_CTL_FRAME_OK-------------------");
-				   	print_error_data(DIN, DOUT, ALU_model);
-			   	end
-		   	end
+		   	else begin 
+			   	if(DOUT.flags != ALU_model.flags) begin
+				   $display("--------------WRONG_FLAGS------------------");
+				   print_error_data(DIN, DOUT, ALU_model);	
+				end
+			   	
+			   	if(DOUT.C != ALU_model.res) begin
+				   $display("--------------WRONG_REULT------------------");
+				   print_error_data(DIN, DOUT, ALU_model);
+				end
+			end
+		  
 	   	end
    	end	
 end

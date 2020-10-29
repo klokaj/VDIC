@@ -20,6 +20,7 @@ class s_monitor;
 			capturing = 1;
 			captured_data[10 - capturing_ctr] = state;
 			capturing_ctr++;
+
 			if(capturing_ctr > 10) begin
 				capturing_ctr = 0;
 				capturing = 0;
