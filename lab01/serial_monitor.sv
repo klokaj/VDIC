@@ -15,7 +15,7 @@ class s_monitor;
 		q = {};
 	endfunction;
 	
-	function sample(bit state);
+	function sample(bit state, bit rst_n);
 		if((capturing == 1) | (state == 0)) begin
 			capturing = 1;
 			captured_data[10 - capturing_ctr] = state;
@@ -29,6 +29,13 @@ class s_monitor;
 		else begin
 			capturing = 0;
 			capturing_ctr = 0;
+		end
+		
+		if(rst_n == 0) begin
+			capturing = 0;
+			q.delete();
+			capturing_ctr = 0;
+			captured_data = 0;
 		end
 	endfunction
 

@@ -24,4 +24,11 @@
 	} err_flag_t;
 	
 	
+typedef enum bit[1:0] {cmd_ok  = 2'b00,
+                       cmd_short  = 2'b01, 
+                       cmd_long  = 2'b10
+} cmd_format_t;
+
+	
+	
 `endif

@@ -13,23 +13,18 @@ class output_data;
 	bit [31:0] C;
 	bit [7:0] ctl;
 	bit format_ok;
-	flag_t flag;
+	bit [3:0] flag;
 	err_flag_t error_f;
 	bit error;
 	
 	s_monitor out_monitor = new;
-	//function new();
-	//	out_monitor = new(m);
-	//endfunction
 	
-	//samples series in data and stores them in queue
-	function sample(bit data);
-		out_monitor.sample(data);
+	function sample(bit data, bit rst_n);
+		out_monitor.sample(data, rst_n);
 	endfunction
 	//cheks if data are ready (ctl frame in buffor)
 	function bit rdy();
-		//if(in_monitor.q.size() >= 9) return 1;	//min 9 frames recieved
-		//return in_monitor.is_ctl_frame_before_index(8);
+
 		return out_monitor.is_ctl_frame_inside();
 	endfunction
 	
@@ -79,11 +74,7 @@ class output_data;
 	function handle_flag();
 		flag = no_f;
 		if(!error) begin
-			if(ctl[6] == 1) flag = carry_f;
-			else if(ctl[5] == 1) flag = ovf_f;
-			else if(ctl[4] == 1) flag = zero_f;
-			else if(ctl[3] == 1) flag = neg_f;
-			else flag = no_f;
+			flag = ctl[6:3];
 		end
 	endfunction
 endclass
