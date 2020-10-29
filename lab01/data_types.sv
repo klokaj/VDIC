@@ -1,6 +1,11 @@
 `ifndef DATA_TYPES
 `define DATA_TYPES
 
+//
+// Plik zawiera uzywane typy danych
+//
+
+
 	typedef enum bit[2:0] {and_op  = 3'b000,
                           or_op = 3'b001, 
                           add_op = 3'b100,

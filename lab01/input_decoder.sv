@@ -6,6 +6,12 @@
 `include "serial_monitor.sv"
 
 
+//
+//	Klasa dekoduje dane wejsciowe. Wyciąga z kolejki danych wyslana komede oraz informacje o tym czy format danych, operacje
+// 	oraz CRC sa poprawne
+//
+
+
 class input_data;
 	bit [31:0] A;
 	bit [31:0] B;

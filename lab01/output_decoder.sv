@@ -7,6 +7,10 @@
 
 
 
+//
+//  Klasa dekoduje strumien danych wyjsciowych. Wyluskuje z nich wynik operacji oraz podniesione flagi. 
+//
+
 
 
 class output_data;

@@ -1,3 +1,12 @@
+
+
+
+
+//
+// Model symulowanego ALU. Na podstawie danych wejsciowych wylicza spodzeiwana odpowiedz.
+//
+
+
 class mtm_alu_model;
 	bit [31:0] res;
 	bit [7:0] ctl;

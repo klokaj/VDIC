@@ -6,6 +6,13 @@
 `include "data_types.sv"
 `include "crc_calc.sv"
 
+//
+//	Plik zawierajacy funkcje do generowania losowych danych dla testera. Dane sa generowane w taki sposob aby jak nalepiej 
+// 	pokryc przypadki testowe
+//
+
+
+
   function operation_t get_op();
       bit [5:0] op_choice;
 	  
@@ -29,8 +36,6 @@
         return 32'hFF_FF_FF_FF;
       else
         return $random;
-      
-      
    endfunction : get_data
    
    

@@ -2,6 +2,14 @@
 `define SERIAL_MONITOR
 
 
+
+//
+// Klasa do monitorowania lini szeregowych. Dane z lini szeregowej sa probkowane i zapisywane do wewnetrznej kolejki. 
+// Klasa zapewnia metody do sprawdzania zawartosci buffora - sprawdzanie czy ma okreslana dlugosc, czy znajduje sie w nim ramka CMD 
+// i na jakiej pozycji
+// 
+
+
 class s_monitor;
 	bit capturing;
 	int capturing_ctr;
