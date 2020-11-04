@@ -19,25 +19,31 @@ initial begin
 	output_data DOUT = new;
 	mtm_alu_model ALU_model = new;
 
-	error_counter = 0;
 	
    	while(1) begin
+	   	//sample sout and sin at clock negedge
 	   	@(negedge bfm.clk);
 	   	DIN.sample(bfm.sin, bfm.reset_n);
 	    DOUT.sample(bfm.sout, bfm.reset_n);
 
+
+	   	//check if din and dout are ready (contains a CTL frame)
 	   	if(DIN.rdy() & DOUT.rdy()) begin
-	
+		   	
+		   	//decode imput / output frames payload
 		   	DIN.decode_data();
 		    DOUT.decode_data();
 		   	
+		   	//calculate expected mtm alu response for a given input data
 		   	ALU_model.calculate_response(DIN);
+
 
 		   	if(framectr % 100 == 0) 
 		   		$display(framectr);
 		   	framectr++;
 		   	
 	
+		   	//Check and report an errors
 		   	if(DOUT.err == 1'b1) begin
 			   if(DOUT.err != ALU_model.err) begin
 				   $display("--------------EXP_FRAME_ERROR------------------");
