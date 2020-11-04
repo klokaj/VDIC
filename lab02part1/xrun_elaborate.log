@@ -1,0 +1,107 @@
+TOOL:	xrun	19.09-s003: Started on Oct 29, 2020 at 21:32:38 CET
+xrun
+	-elaborate
+	-l xrun_elaborate.log
+	-f dut.f
+		mtm_Alu.vp
+	-f tb.f
+		mtm_alu_tb.sv
+	-v93
+	+nowarnDSEM2009
+	+nowarnDSEMEL
+	+nowarnCGDEFN
+	-xmlibdirname INCA_libs
+	+overwrite
+	-nocopyright
+	-coverage all
+	-covoverwrite
+	-covfile xrun_covfile.txt
+INCLUDE $PDK_DIR/cds.lib
+|
+xrun: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+INCLUDE $PDK_DIR/cds.lib
+|
+xrun: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+INCLUDE $PDK_DIR/cds.lib
+|
+xrun: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+INCLUDE $PDK_DIR/cds.lib
+|
+xrun: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+INCLUDE $PDK_DIR/cds.lib
+|
+xrun: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+INCLUDE $PDK_DIR/cds.lib
+|
+xrun: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+INCLUDE $PDK_DIR/cds.lib
+|
+xrun: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+INCLUDE $PDK_DIR/cds.lib
+|
+xrun: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+INCLUDE $PDK_DIR/cds.lib
+|
+xrun: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+INCLUDE $PDK_DIR/cds.lib
+|
+xmelab: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+		Caching library 'worklib' ....... Done
+	Elaborating the design hierarchy:
+	Top level design units:
+		$unit_0x4dbca20c
+		top
+
+	Extracting FSMs for coverage:
+		worklib.mtm_Alu
+		worklib.top
+	Total FSMs extracted = 0
+	Building instance overlay tables: ......
+		    op_set = 0;
+		             |
+xmelab: *W,ENUMERR (./mtm_alu_tb.sv,229|15): This assignment is a violation of SystemVerilog strong typing rules for enumeration datatypes.
+.............. Done
+	Enabling instrumentation for coverage types: block expression FSM toggle functional
+	Generating native compiled code:
+INCLUDE $PDK_DIR/cds.lib
+|
+xmvlog_cg: *W,DLCVAR (/home/student/klokaj/cds.lib,1): cds.lib Invalid environment variable ''.
+			streams:   7, words:  3972
+			streams:   9, words: 25661
+			streams:   7, words:  3321
+		worklib.top:sv <0x6b453084>
+			streams:  24, words: 36559
+		worklib.\$unit_0x4dbca20c :compilation_unit <0x521b24ac>
+			streams:   8, words:  3122
+		worklib.\$unit_0x4dbca20c :compilation_unit <0x76dc0eb3>
+			streams:  12, words:  6775
+		worklib.\$unit_0x4dbca20c :compilation_unit <0x40e1f327>
+			streams:  12, words:  5525
+		worklib.\$unit_0x4dbca20c :compilation_unit <0x1dca1b98>
+			streams:  12, words:  5545
+		worklib.\$unit_0x4dbca20c :compilation_unit <0x598a0755>
+			streams:  13, words:  5749
+		worklib.\$unit_0x4dbca20c :compilation_unit <0x1b67ae97>
+			streams:   7, words: 12583
+   int  payload_len; 
+                  |
+xmelab: *W,COVUTA (./mtm_alu_tb.sv,23|18): Toggle coverage is not supported for SystemVerilog integer, real, string, dynamic array, sparse memory and reference ports. It is also not supported for VHDL multi-dimensional array and array of record. There may also be other such objects in the design.
+	Building instance specific data structures.
+	Performing constant object marking (COM) analysis.
+	Loading native compiled code:     .................... Done
+	Design hierarchy summary:
+		                     Instances  Unique
+		Modules:                     5       5
+		Registers:                 193     226
+		Scalar wires:                7       -
+		Vectored wires:              2       -
+		Always blocks:              12      12
+		Initial blocks:              8       8
+		Pseudo assignments:          2       2
+		Covergroup Instances:        0       5
+		Compilation units:           1       1
+		SV Class declarations:       5       5
+		SV Class specializations:    5       5
+		Simulation timescale:      1ps
+	Writing initial simulation snapshot: worklib.top:sv
+TOOL:	xrun	19.09-s003: Exiting on Oct 29, 2020 at 21:32:38 CET  (total: 00:00:00)
