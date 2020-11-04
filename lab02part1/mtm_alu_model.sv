@@ -1,4 +1,5 @@
-
+`ifndef MTM_ALU_MODEL
+`define MTM_ALU_MODEL
 
 
 
@@ -78,3 +79,5 @@ class mtm_alu_model;
 		end
 	endfunction
 endclass	
+
+`endif // MTM_ALU_MODEL
