@@ -42,6 +42,8 @@ covergroup op_cov;
   }
 endgroup
 
+
+
 covergroup zeros_or_ones_on_ops;
   option.name = "cg_zeros_or_ones_on_ops";
 
@@ -170,9 +172,6 @@ endgroup
    err_flags_cov c_err_flags;
    op_after_rst_cov c_op_after_rst; 
 
-
-
-
    initial begin : coverage
 	  input_data DIN = new;
 	  mtm_alu_model ALU_model = new;
@@ -186,22 +185,30 @@ endgroup
 	   
 	   
       forever begin : sample_cov
+	     //sample sin at clock negedge
          @(negedge bfm.clk);
 	     DIN.sample(bfm.sin, bfm.reset_n);
 	      
 	      
+	     //check if input data is ready
 	     if(DIN.rdy()) begin
 		    payload_len = DIN.packet_lenght;
+		    //decode input data 
 		    DIN.decode_data();
+		     
+		    //extracta data for coverage blocks (coverage sampling signals could by redefined)  
 		    A = DIN.A;
 		    B = DIN.B;
 		    op_set = DIN.op;
 		     
+		   //calculate expected response for a given input data 
 		    ALU_model.calculate_response(DIN);  
+		    //extract flags for a coverage blocks 
 		    expected_flag = ALU_model.flags;
 		    expected_err_flag = ALU_model.err_flags;
 		    expected_err = ALU_model.err;
     
+		    //sample coverages blocks 
 		 	oc.sample();
          	c_00_FF.sample();
 		    c_flags.sample();
@@ -209,6 +216,7 @@ endgroup
 		    c_op_after_rst.sample();
 	     end	
 	     else if(bfm.reset_n == 1'b0) begin
+		    //sample operation after reset coverage block 
 		    op_set = 0;
 		 	c_op_after_rst.sample();
 		 
