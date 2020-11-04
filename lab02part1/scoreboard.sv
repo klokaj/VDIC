@@ -8,7 +8,7 @@
 
 module scoreboard(mtm_alu_bfm bfm);
    	import mtm_alu_pkg::*;
-	
+
 
 int error_counter = 0;
 int framectr = 0;

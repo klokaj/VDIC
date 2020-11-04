@@ -1,13 +1,14 @@
 `ifndef INPUT_DECODER
 `define INPUT_DECODER
 
-`include "data_types.sv"
+
 `include "crc_calc.sv"
 `include "serial_monitor.sv"
+`include "mtm_alu_pkg.sv"
 
-
+import mtm_alu_pkg::*;
 //
-//	Klasa dekoduje dane wejsciowe. Wyciąga z kolejki danych wyslana komede oraz informacje o tym czy format danych, operacje
+//	Klasa dekoduje dane wejsciowe. Wyciga z kolejki danych wyslana komede oraz informacje o tym czy format danych, operacje
 // 	oraz CRC sa poprawne
 //
 

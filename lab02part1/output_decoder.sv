@@ -1,10 +1,11 @@
 `ifndef OUTPUT_DECODER
 `define OUTPUT_DECODER
 
-`include "data_types.sv"
+
 `include "crc_calc.sv"
 `include "serial_monitor.sv"
-
+`include "mtm_alu_pkg.sv"
+import mtm_alu_pkg::*;
 
 
 //
