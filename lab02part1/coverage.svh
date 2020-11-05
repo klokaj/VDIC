@@ -1,11 +1,4 @@
 
-`include "mtm_alu_pkg.sv"
-`include "mtm_alu_model.sv"
-`include "mtm_alu_bfm.sv"
-
-`include "input_decoder.sv"
-`include "crc_calc.sv"
-`include "mtm_alu_model.sv"
 
 
 
@@ -23,7 +16,7 @@ wire reset_n;
 bit[3:0] expected_flag; 
 bit[5:0] expected_err_flag;
 bit	  	 expected_err;
-shortint payload_len;
+bit[7:0] payload_len;
 	
 	
 assign reset_n = bfm.reset_n;
@@ -173,9 +166,11 @@ endgroup
    op_after_rst_cov c_op_after_rst; 
 
    initial begin : coverage
-	  input_data DIN = new;
-	  mtm_alu_model ALU_model = new;
+	  input_data DIN;
+	  mtm_alu_model ALU_model;
 	  
+	  DIN = new();
+	  ALU_model = new();
 
       oc = new();
       c_00_FF = new();
@@ -217,7 +212,7 @@ endgroup
 	     end	
 	     else if(bfm.reset_n == 1'b0) begin
 		    //sample operation after reset coverage block 
-		    op_set = 0;
+		    //op_set = 0;
 		 	c_op_after_rst.sample();
 		 
 		 end

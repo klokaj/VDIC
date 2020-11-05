@@ -1,4 +1,4 @@
-`include "mtm_alu_pkg.sv"
+
 
 interface mtm_alu_bfm;
 import mtm_alu_pkg::*;

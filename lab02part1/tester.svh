@@ -1,7 +1,3 @@
-`include "crc_calc.sv"
-`include "random_data_gen.sv"
-`include "mtm_alu_bfm.sv"
-`include "mtm_alu_pkg.sv"
 
 
 
