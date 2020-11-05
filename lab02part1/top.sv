@@ -1,7 +1,3 @@
-`include "mtm_alu_bfm.sv"
-`include "tester.sv"
-`include "scoreboard.sv"
-`include "coverage.sv"
 
 
 //

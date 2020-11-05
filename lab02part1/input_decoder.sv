@@ -2,9 +2,7 @@
 `define INPUT_DECODER
 
 
-`include "crc_calc.sv"
-`include "serial_monitor.sv"
-`include "mtm_alu_pkg.sv"
+
 
 import mtm_alu_pkg::*;
 //
@@ -30,7 +28,7 @@ class input_data;
 	s_monitor in_monitor = new;
 	
 
-	function sample(bit data, bit rst_n);
+	function void sample(bit data, bit rst_n);
 		in_monitor.sample(data, rst_n);
 	endfunction
 	//cheks if data are ready (ctl frame in buffor)
@@ -40,7 +38,7 @@ class input_data;
 		return (in_monitor.is_ctl_frame_inside()) || (in_monitor.q.size() >= 9);
 	endfunction
 	
-	function decode_data();
+	function void decode_data();
 		bit [8:0] tmp = 0;
 
 		if(in_monitor.is_first_ctl_frame_at_index(8)) format = cmd_ok;
@@ -97,7 +95,7 @@ class input_data;
 		
 	endfunction
 	
-	function handle_op();
+	function void handle_op();
 		if(ctl[6:4] == 3'b000) op = and_op;
 		else if(ctl[6:4] == 3'b001) op = or_op;
 		else if(ctl[6:4] == 3'b100) op = add_op;
@@ -106,7 +104,7 @@ class input_data;
 		op_ok = !(op == rsv_op);
 	endfunction
 	
-	function handle_crc();
+	function void handle_crc();
 		bit [3:0] expected_crc;
 		crc = ctl[3:0];
 		

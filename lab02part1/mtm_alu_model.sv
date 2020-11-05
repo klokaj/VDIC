@@ -17,7 +17,7 @@ class mtm_alu_model;
 	bit err;
 
 
-	function calculate_response(input_data din); 
+	function void calculate_response(input_data din); 
 		bit[2:0] crc_tmp;
 		ctl = 0;
 		

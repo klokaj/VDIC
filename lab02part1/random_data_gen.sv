@@ -2,8 +2,6 @@
 `define RANDOM_DATA_GEN
 
 
-`include "mtm_alu_pkg.sv"
-`include "crc_calc.sv"
 import mtm_alu_pkg::*;
 //
 //	Plik zawierajacy funkcje do generowania losowych danych dla testera. Dane sa generowane w taki sposob aby jak nalepiej 

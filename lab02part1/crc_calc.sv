@@ -5,12 +5,13 @@
 
 //calculate crc for 38b data lenght and poly = X^3 + X + 1 - output CRC
 function [2:0] nextCRC3_D37( bit[37:0] Data);
-    reg [2:0] crc = 3'b000;
+    reg [2:0] crc;
     reg [36:0] d;
     reg [2:0] c;
     reg [2:0] newcrc;
   	begin
     d = Data;
+    crc = 3'b000;
     c = crc;
 
     newcrc[0] = d[35] ^ d[32] ^ d[31] ^ d[30] ^ d[28] ^ d[25] ^ d[24] ^ d[23] ^ d[21] ^ d[18] ^ d[17] ^ d[16] ^ d[14] ^ d[11] ^ d[10] ^ d[9] ^ d[7] ^ d[4] ^ d[3] ^ d[2] ^ d[0] ^ c[1];

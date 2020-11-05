@@ -2,9 +2,7 @@
 `define OUTPUT_DECODER
 
 
-`include "crc_calc.sv"
-`include "serial_monitor.sv"
-`include "mtm_alu_pkg.sv"
+
 import mtm_alu_pkg::*;
 
 
@@ -23,7 +21,7 @@ class output_data;
 	
 	s_monitor out_monitor = new;
 	
-	function sample(bit data, bit rst_n);
+	function void sample(bit data, bit rst_n);
 		out_monitor.sample(data, rst_n);
 	endfunction
 	//cheks if data are ready (ctl frame in buffor)
@@ -33,7 +31,7 @@ class output_data;
 	endfunction
 	
 
-	function decode_data();
+	function void decode_data();
 		bit [8:0] tmp = 0;
 		//reads data from queue
 		if(out_monitor.is_first_ctl_frame_at_index(4) == 1) begin
@@ -61,7 +59,7 @@ class output_data;
 		handle_flag();
 	endfunction
 	
-	function handle_error();
+	function void handle_error();
 		err = ctl[7];
 		err_flags = no_err;
 		if(err) begin
@@ -74,7 +72,7 @@ class output_data;
 		end
 	endfunction
 	
-	function handle_flag();
+	function void handle_flag();
 		flags = no_f;
 		if(!err) begin
 			flags = ctl[6:3];

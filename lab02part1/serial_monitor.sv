@@ -21,7 +21,7 @@ class s_monitor;
 		capturing_ctr = 0;
 		captured_data = 0;
 		q = {};
-	endfunction;
+	endfunction
 	
 	function sample(bit state, bit rst_n);
 		if((capturing == 1) | (state == 0)) begin
@@ -82,7 +82,7 @@ class s_monitor;
 	
 	function bit is_ctl_frame_inside();
 		return is_ctl_frame_before_index(q.size());
-	endfunction;	
+	endfunction
 endclass
 
 
