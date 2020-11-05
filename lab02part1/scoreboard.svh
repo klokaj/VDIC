@@ -39,9 +39,9 @@ initial begin
 		   	ALU_model.calculate_response(DIN);
 
 
-		   	if(frame_ctr % 100 == 0) 
-		   		$display(frame_ctr);
-		   	frame_ctr++;
+		   	//if(frame_ctr % 100 == 0) 
+		   	//	$display(frame_ctr);
+		   	//frame_ctr++;
 		   	
 	
 		   	//Check and report an errors
