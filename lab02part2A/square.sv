@@ -13,4 +13,4 @@ class square extends shape;
 		$display("Square w=%g area=%g", width, get_area() );
 	endfunction : print
 
-endclass : rectangle
+endclass : square

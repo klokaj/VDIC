@@ -13,4 +13,4 @@ class triangle extends shape;
 		$display("Triangle w=%g h=%g area=%g", width, height, get_area() );
 	endfunction : print
 
-endclass : rectangle
+endclass : triangle
