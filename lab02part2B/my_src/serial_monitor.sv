@@ -23,7 +23,7 @@ class s_monitor;
 		q = {};
 	endfunction
 	
-	function sample(bit state, bit rst_n);
+	function void sample(bit state, bit rst_n);
 		if((capturing == 1) | (state == 0)) begin
 			capturing = 1;
 			captured_data[10 - capturing_ctr] = state;

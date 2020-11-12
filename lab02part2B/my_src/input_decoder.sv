@@ -68,7 +68,7 @@ class input_data;
 			packet_lenght = 0;
 			//tmp = in_monitor.q.pop_front();
 			while(in_monitor.is_data_frame(0)) begin
-				in_monitor.q.pop_front();
+				tmp = in_monitor.q.pop_front();
 				packet_lenght += 1;
 			end
 			tmp = in_monitor.q.pop_front();
@@ -78,7 +78,7 @@ class input_data;
 		end
 		else begin 
 			repeat (9) begin
-				in_monitor.q.pop_front();
+				tmp = in_monitor.q.pop_front();
 			end
 			format_ok = 0;
 			packet_lenght = 9;

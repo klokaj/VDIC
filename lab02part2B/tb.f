@@ -7,10 +7,15 @@ my_src/input_decoder.sv
 my_src/random_data_gen.sv
 my_src/mtm_alu_model.sv
 
-top.sv
-coverage.svh
+
 scoreboard.svh
 tester.svh
+coverage.svh
+testbench.svh
+top.sv
+
+
+
 mtm_alu_bfm.svh
 
 

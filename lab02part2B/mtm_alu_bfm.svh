@@ -41,11 +41,11 @@ wire  	 sout;	// mtm_Alu serial out
 	
 	task tx_data(input bit [7:0] d);
 		tx_frame({1'b0, d});
-	endtask;
+	endtask
 	
 	task tx_command(input bit [7:0] d);
 		tx_frame({1'b1, d});
-	endtask;
+	endtask
 	
 	//send whole packet. last element of queue is treated as an CTL command
 	task tx_packet(input bit [7:0] q [$]);
