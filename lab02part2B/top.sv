@@ -1,7 +1,5 @@
-
-
 //
-// Glowny plik symulacyjn
+// Top sim file
 //
 
 
