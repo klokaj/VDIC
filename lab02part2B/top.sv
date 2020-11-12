@@ -1,9 +1,3 @@
-//
-// Top sim file
-//
-
-
-
 module top;
 import mtm_alu_pkg::*;	
 	
