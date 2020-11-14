@@ -5,6 +5,7 @@ import mtm_alu_pkg::*;
 `include "tb_classes/base_tester.svh"
 `include "tb_classes/random_tester.svh"
 `include "tb_classes/add_tester.svh"
+`include "tb_classes/extream_val_tester.svh"
 
 `include "tb_classes/scoreboard.svh"
 `include "tb_classes/coverage.svh"
@@ -12,6 +13,7 @@ import mtm_alu_pkg::*;
 
 `include "tb_classes/random_test.svh"
 `include "tb_classes/add_test.svh"
+`include "tb_classes/extream_val_test.svh"
 	//tb_classes/env.svh
 //tb_classes/random_test.svh
 //tb_classes/random_tester.svh

@@ -22,11 +22,11 @@ class random_tester extends base_tester;
     endfunction : new
 
     function bit[31:0] get_data();
-      	bit [3:0] zero_ones;
+      	bit [8:0] zero_ones;
       	zero_ones = $random; 
-      	if (zero_ones == 4'b0000)
+      	if (zero_ones == 8'b00000000)
         	return 32'h00_00_00_00;
-      	else if (zero_ones == 4'b1111)
+      	else if (zero_ones == 8'b11111111)
         	return 32'hFF_FF_FF_FF;
       	else
         	return $random;
@@ -49,13 +49,25 @@ class random_tester extends base_tester;
     function bit[3:0] get_crc(bit [67:0] data);
 		bit [3:0] crc;            
 
-	   
 	    if($urandom_range(250, 0) != 0) crc = nextCRC4_D68(data);
 	    else crc = $random;
-	   
-	   
+  
 	   	return crc; 
     endfunction : get_crc
+    
+    
+    function bit get_reset();
+	 
+	    if($urandom_range(250, 0) != 0) return 0;
+	    else return 1;
+	    
+    endfunction : get_reset
+    
+
+	    
+    function bit get_del_data_q();
+		return ($urandom_range(250, 0) == 0);
+    endfunction : get_del_data_q
 
 endclass : random_tester
 

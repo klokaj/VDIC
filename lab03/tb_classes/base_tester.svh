@@ -42,7 +42,8 @@ virtual class base_tester extends uvm_component;
     pure virtual function operation_t get_op();
     pure virtual function bit[31:0] get_data();
     pure virtual function bit [3:0] get_crc(bit [67:0] data);
-
+    pure virtual function bit get_reset();
+    pure virtual function bit get_del_data_q();
    
     task run_phase(uvm_phase phase);
         bit[31:0] iA;
@@ -56,12 +57,13 @@ virtual class base_tester extends uvm_component;
 
         bfm.reset_alu();
 
-        repeat (1000) begin : random_loop
+        repeat (5000) begin : random_loop
             op_set = get_op();
             iA     = get_data();
             iB     = get_data();
             iCRC = get_crc({iB, iA, 1'b1, op_set});
 
+	        
 	        q.delete();
 	        
 	        q.push_back(iB[31:24]);
@@ -73,12 +75,17 @@ virtual class base_tester extends uvm_component;
 	        q.push_back(iA[23:16]);
 	        q.push_back(iA[15:8]);
 	        q.push_back(iA[7:0]);
+	        //$display("*****TX*****");
+	        //$display("A:%d B:%d ctl:%b", iA, iB, 1'b0, op_set, iCRC);
 	        
 	        
+	        if(get_del_data_q) q.delete();
+
 	     	q.push_back({1'b0, op_set, iCRC});  
-	        
-	        
+	       
 	        bfm.tx_packet(q);
+	        
+	        if(get_reset()) bfm.reset_alu();
 	        
         end : random_loop
 

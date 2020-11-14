@@ -50,9 +50,9 @@ class scoreboard extends uvm_component;
 			   	//calculate expected mtm alu response for a given input data
 			   	ALU_model.calculate_response(DIN);
 			   	ctr ++;
-//			   	$display("******RX******");
-//			   	$display(" A:%d, B:%d", DIN.A, DIN.B);
-//			   	$display("C = %d, ctl = %b, ctr=%d", DOUT.C, DOUT.ctl, ctr);
+			   	$display("******RX******");
+			   	$display(" A:%d, B:%d", DIN.A, DIN.B);
+			   	$display("C = %d, ctl = %b, ctr=%d", DOUT.C, DOUT.ctl, ctr);
 			   	//Check and report an errors
 			   	if(DOUT.err == 1'b1) begin
 				   if(DOUT.err != ALU_model.err) begin
