@@ -29,14 +29,12 @@ class scoreboard extends uvm_component;
     endfunction : build_phase
 
     task run_phase(uvm_phase phase);
-	    int ctr;
 		input_data DIN;
 		output_data DOUT;
 		mtm_alu_model ALU_model;
  		DIN = new();
 		DOUT = new();
 		ALU_model = new();
-	    ctr = 0;
 		forever begin: self_checker
 	   	//sample sout and sin at clock negedge
 	   		@(negedge bfm.clk);
@@ -49,10 +47,7 @@ class scoreboard extends uvm_component;
 			    DOUT.decode_data();
 			   	//calculate expected mtm alu response for a given input data
 			   	ALU_model.calculate_response(DIN);
-			   	ctr ++;
-			   	$display("******RX******");
-			   	$display(" A:%d, B:%d", DIN.A, DIN.B);
-			   	$display("C = %d, ctl = %b, ctr=%d", DOUT.C, DOUT.ctl, ctr);
+			   
 			   	//Check and report an errors
 			   	if(DOUT.err == 1'b1) begin
 				   if(DOUT.err != ALU_model.err) begin
