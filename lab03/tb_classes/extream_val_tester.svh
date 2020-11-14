@@ -34,4 +34,4 @@ class extream_val_tester extends random_tester;
         super.new(name, parent);
     endfunction : new
 
-endclass : add_tester
+endclass : extream_val_tester
