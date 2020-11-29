@@ -56,18 +56,7 @@ class random_tester extends base_tester;
     endfunction : get_crc
     
     
-    function bit get_reset();
-	 
-	    if($urandom_range(250, 0) != 0) return 0;
-	    else return 1;
-	    
-    endfunction : get_reset
-    
 
-	    
-    function bit get_del_data_q();
-		return ($urandom_range(250, 0) == 0);
-    endfunction : get_del_data_q
 
 endclass : random_tester
 

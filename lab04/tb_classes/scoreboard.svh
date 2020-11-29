@@ -13,62 +13,106 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-class scoreboard extends uvm_component;
+class scoreboard extends uvm_subscriber #(result_s);
 
     `uvm_component_utils(scoreboard)
 
-    virtual mtm_alu_bfm bfm;
+    //virtual mtm_alu_bfm bfm;
+	uvm_tlm_analysis_fifo #(command_s) cmd_f;
 
     function new (string name, uvm_component parent);
         super.new(name, parent);
     endfunction : new
 
     function void build_phase(uvm_phase phase);
-        if(!uvm_config_db #(virtual mtm_alu_bfm)::get(null, "*","bfm", bfm))
-            $fatal(1,"Failed to get BFM");
+	    cmd_f = new("cmd_f, this");
     endfunction : build_phase
 
-    task run_phase(uvm_phase phase);
-		input_data DIN;
-		output_data DOUT;
-		mtm_alu_model ALU_model;
- 		DIN = new();
-		DOUT = new();
-		ALU_model = new();
-		forever begin: self_checker
-	   	//sample sout and sin at clock negedge
-	   		@(negedge bfm.clk);
-	   		DIN.sample(bfm.sin, bfm.reset_n);
-	    	DOUT.sample(bfm.sout, bfm.reset_n);
-		   	//check if din and dout are ready (contains a CTL frame)
-		   	if(DIN.rdy() & DOUT.rdy()) begin
-			   	//decode imput / output frames payload
-			   	DIN.decode_data();
-			    DOUT.decode_data();
-			   	//calculate expected mtm alu response for a given input data
-			   	ALU_model.calculate_response(DIN);
-			   
-			   	//Check and report an errors
-			   	if(DOUT.err == 1'b1) begin
-				   if(DOUT.err != ALU_model.err) begin
-					   $display("--------------EXP_FRAME_ERROR------------------");
-				   end
-				   else if(DOUT.err_flags != ALU_model.err_flags) begin
-				   	   $display("--------------WRONG_ERROR_FLAGS------------------");
-				   end
-			   	end
-			   	else begin 
-				   	if(DOUT.flags != ALU_model.flags) begin
-					   $display("--------------WRONG_FLAGS------------------");
-					end
-				   	
-				   	if(DOUT.C != ALU_model.res) begin
-					   $display("--------------WRONG_REULT------------------");
-					end
-			   	end
-			end  //if(DIN.rdy() & DOUT.rdy())
-		end : self_checker
-    endtask : run_phase
+    function void write(result_s t);
+	  	bit[3:0] flag;
+		result_s predicted;
+	    command_s cmd;
+	
+		//while(!cmd_f.try_get(cmd)) begin
+		//	$display("Trying get");
+		//end
+		//cmd_f.get(cmd);
+		//$display("GOT!!!!!!!!!!!!!!!!!!!!!!!!1");
+	    
+	    //$display("C= %g", t.C);
+		//cmd_f.get(cmd);
+		//
+		//      Add data error flag
+		//
+		if( cmd.crc != nextCRC4_D68({cmd.B, cmd.A, 1'b1, cmd.op})) begin
+			predicted.error = 1;
+			predicted.err_flag.crc = 1;
+		end
+		else if( cmd.op == rsv_op) begin
+			predicted.error = 1;
+			predicted.err_flag.op = 1;
+		end
+		else begin
+			predicted.error = 0;
+			case(cmd.op)
+				and_op: begin
+					predicted.C = cmd.A & cmd.B;
+     			end
+     			or_op : begin 
+         			predicted.C = cmd.A | cmd.B;
+     			end
+     			sub_op: begin 
+	         		predicted.C = cmd.B - cmd.A;
+         			if(cmd.A > cmd.B) begin 
+	         			flag[3] = 1; //overflow
+	         			flag[2] = ((predicted.C[31] != cmd.B[31]) & (cmd.B[31] == 1 | cmd.A[31] == 1)) ;
+         			end
+         			else begin
+	         			flag[2] = ((predicted.C[31] != cmd.B[31]) & cmd.B[31] == 1 & cmd.A[31] == 0);
+	         		end	
+				end
+				add_op: begin
+					predicted.C = cmd.B + cmd.A;
+					flag[3] = (predicted.C < cmd.B | predicted.C < cmd.A);
+					flag[2] = (predicted.C[31] != cmd.B[31] &  predicted.C[31] != cmd.A[31]);
+				end
+			endcase
+			flag[1] = (predicted.C == 0); //zero
+			flag[0] = (predicted.C == 1); //negative
+			
+			predicted.flag.carry = flag[3];
+			predicted.flag.ovf = flag[2];
+			predicted.flag.zero = flag[1];
+			predicted.flag.neg = flag[0];
+		
+			predicted.crc = nextCRC3_D37({predicted.C, 1'b0, flag});	
+		end
+		
+		
+	    //
+	    // Compare results
+	    //
+	    
+	    
+//	   	if(t.error == 1'b1) begin
+//		   if(predicted.crc == 0) begin
+//			   $display("--------------EXP_FRAME_ERROR------------------");
+//		   end
+//		   else if(t.err_flag != predicted.err_flag) begin
+//		   	   $display("--------------WRONG_ERROR_FLAGS------------------");
+//		   end
+//	   	end
+//	   	else begin 
+//		   	if(t.flag != predicted.flag) begin
+//			   $display("--------------WRONG_FLAGS------------------");
+//			end
+//		   	
+//		   	if(t.C != predicted.C) begin
+//			   $display("--------------WRONG_REULT------------------");
+//			end
+//	   	end
+	  
+    endfunction : write
 
 endclass : scoreboard
 
