@@ -21,22 +21,16 @@
 // note: irun warns about the virtual class instantiation, this will be an
 // error in future releases.
 virtual class base_tester extends uvm_component;
-//`else
-//class base_tester extends uvm_component;
-//`endif
-//`endif
-
     `uvm_component_utils(base_tester)
 
-    virtual mtm_alu_bfm bfm;
+	uvm_put_port #(command_s) command_port;
 
     function new (string name, uvm_component parent);
         super.new(name, parent);
     endfunction : new
 
     function void build_phase(uvm_phase phase);
-        if(!uvm_config_db #(virtual mtm_alu_bfm)::get(null, "*","bfm", bfm))
-            $fatal(1,"Failed to get BFM");
+	    command_port = new("command_port", this);
     endfunction : build_phase
 
     pure virtual function operation_t get_op();
@@ -44,54 +38,50 @@ virtual class base_tester extends uvm_component;
     pure virtual function bit [3:0] get_crc(bit [67:0] data);
  
     task run_phase(uvm_phase phase);
-        bit[31:0] iA;
-        bit[31:0] iB;
-	    bit[3:0]  iCRC;
-	    bit [7:0] q [$];
-        operation_t op_set;
-   
-
+	    command_s command;
+	    
         phase.raise_objection(this);
+	    
+	    //command.op = rst_op;
+	    //command_port.put(command);
 
-        bfm.reset_alu();
-
-        repeat (50) begin : random_loop
-            op_set = get_op();
-            iA     = get_data();
-            iB     = get_data();
-            iCRC = get_crc({iB, iA, 1'b1, op_set});
-
+        repeat (500) begin : random_loop
+	        command.op = get_op();
+	        command.A = get_data();
+	        command.B = get_data();
+	        command.crc = get_crc({command.B, command.A, 1'b1, command.op});
 	        
-	        q.delete();
-	        
-	        q.push_back(iB[31:24]);
-	        q.push_back(iB[23:16]);
-	        q.push_back(iB[15:8]);
-	        q.push_back(iB[7:0]);
-	        
-	        q.push_back(iA[31:24]);
-	        q.push_back(iA[23:16]);
-	        q.push_back(iA[15:8]);
-	        q.push_back(iA[7:0]);
-	        //$display("*****TX*****");
-	        //$display("A:%d B:%d ctl:%b", iA, iB, 1'b0, op_set, iCRC);
-	        
-	        
-	        //if(get_del_data_q) q.delete();
-
-	     	q.push_back({1'b0, op_set, iCRC});  
-	       
-	        bfm.tx_packet(q);
-	        
-	        //if(get_reset()) bfm.reset_alu();
+	        command_port.put(command);	        
 	        
         end : random_loop
-
-//      #500;
-
+        #500;
         phase.drop_objection(this);
 
     endtask : run_phase
 
 
 endclass : base_tester
+
+
+//	        q.delete();
+//	        
+//	        q.push_back(iB[31:24]);
+//	        q.push_back(iB[23:16]);
+//	        q.push_back(iB[15:8]);
+//	        q.push_back(iB[7:0]);
+//	        
+//	        q.push_back(iA[31:24]);
+//	        q.push_back(iA[23:16]);
+//	        q.push_back(iA[15:8]);
+//	        q.push_back(iA[7:0]);
+//	        //$display("*****TX*****");
+//	        //$display("A:%d B:%d ctl:%b", iA, iB, 1'b0, op_set, iCRC);
+//	        
+//	        
+//	        //if(get_del_data_q) q.delete();
+//
+//	     	q.push_back({1'b0, op_set, iCRC});  
+//	       
+//	        bfm.tx_packet(q);
+//	        
+//	        //if(get_reset()) bfm.reset_alu();

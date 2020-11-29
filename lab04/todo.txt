@@ -1,0 +1,7 @@
+1 - Sprawdzenie czy flagi są dorbze przewidywany (scoreboard zgłasza błedy od
+    flag) 
+
+2 - dodanie obsługi komenty rst
+
+
+

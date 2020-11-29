@@ -86,7 +86,6 @@ wire  	 sout;	// mtm_Alu serial out
 		forever begin : sin_monitor_loop
 			@(negedge clk);
 			inMonitor.sample(sin, reset_n);
-			
 			if( inMonitor.get_lenght() >= 9 ) begin
 				for(int i = 0; i < 4; i++) begin
 					tmp = inMonitor.pop_front();
@@ -102,8 +101,8 @@ wire  	 sout;	// mtm_Alu serial out
 				
 				command.crc = tmp[3:0];
 				command.op = op2enum(tmp[6:4]);
-				$display("Put command!!!!");
-				$display("A:%g, B:%g, crc:%b", command.A, command.B, command.crc);
+				//$display("Put command!!!!");
+				//$display("A:%g, B:%g, crc:%b", command.A, command.B, command.crc);
 				command_monitor_h.write_to_monitor(command);
 			end
 		end	: sin_monitor_loop
@@ -124,7 +123,7 @@ wire  	 sout;	// mtm_Alu serial out
 			@(negedge clk);
 			outMonitor.sample(sout, reset_n);
 			
-			if(outMonitor.get_lenght() >= 4) begin
+			if(outMonitor.get_lenght() >= 5) begin
 				for(int i = 0; i < 4; i++) begin
 					tmp = outMonitor.pop_front();
 					result.C[31-8*i -:8] = tmp[7:0];

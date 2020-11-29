@@ -16,8 +16,6 @@
 class scoreboard extends uvm_subscriber #(result_s);
 
     `uvm_component_utils(scoreboard)
-
-    //virtual mtm_alu_bfm bfm;
 	uvm_tlm_analysis_fifo #(command_s) cmd_f;
 
     function new (string name, uvm_component parent);
@@ -25,17 +23,21 @@ class scoreboard extends uvm_subscriber #(result_s);
     endfunction : new
 
     function void build_phase(uvm_phase phase);
-	    cmd_f = new("cmd_f, this");
+	    cmd_f = new("cmd_f", this);
     endfunction : build_phase
 
     function void write(result_s t);
 	  	bit[3:0] flag;
 		result_s predicted;
 	    command_s cmd;
-	
+		
+		
+		cmd_f.try_get(cmd);
 		//while(!cmd_f.try_get(cmd)) begin
 		//	$display("Trying get");
 		//end
+		$display("Scor C:%d err:%b", t.C, t.error);
+		$display("Scor A:%d B:%d op:%b", cmd.A, cmd.B, cmd.op);
 		//cmd_f.get(cmd);
 		//$display("GOT!!!!!!!!!!!!!!!!!!!!!!!!1");
 	    
@@ -94,23 +96,23 @@ class scoreboard extends uvm_subscriber #(result_s);
 	    //
 	    
 	    
-//	   	if(t.error == 1'b1) begin
-//		   if(predicted.crc == 0) begin
-//			   $display("--------------EXP_FRAME_ERROR------------------");
-//		   end
-//		   else if(t.err_flag != predicted.err_flag) begin
-//		   	   $display("--------------WRONG_ERROR_FLAGS------------------");
-//		   end
-//	   	end
-//	   	else begin 
-//		   	if(t.flag != predicted.flag) begin
-//			   $display("--------------WRONG_FLAGS------------------");
-//			end
-//		   	
-//		   	if(t.C != predicted.C) begin
-//			   $display("--------------WRONG_REULT------------------");
-//			end
-//	   	end
+	   	if(t.error == 1'b1) begin
+		   if(predicted.crc == 0) begin
+			   $display("--------------EXP_FRAME_ERROR------------------");
+		   end
+		   else if(t.err_flag != predicted.err_flag) begin
+		   	   $display("--------------WRONG_ERROR_FLAGS------------------");
+		   end
+	   	end
+	   	else begin 
+		   	if(t.flag != predicted.flag) begin
+			   $display("--------------WRONG_FLAGS------------------");
+			end
+		   	
+		   	if(t.C != predicted.C) begin
+			   $display("--------------WRONG_REULT------------------");
+			end
+	   	end
 	  
     endfunction : write
 
