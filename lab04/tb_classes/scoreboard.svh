@@ -30,19 +30,13 @@ class scoreboard extends uvm_subscriber #(result_s);
 	  	bit[3:0] flag;
 		result_s predicted;
 	    command_s cmd;
-		
-		
-		cmd_f.try_get(cmd);
-		//while(!cmd_f.try_get(cmd)) begin
-		//	$display("Trying get");
-		//end
-		//$display("Scor C:%d err:%b", t.C, t.error);
-		//$display("Scor A:%d B:%d op:%b", cmd.A, cmd.B, cmd.op);
-		//cmd_f.get(cmd);
-		//$display("GOT!!!!!!!!!!!!!!!!!!!!!!!!1");
-	    
-	    //$display("C= %g", t.C);
-		//cmd_f.get(cmd);
+
+		do begin
+			if(!cmd_f.try_get(cmd))
+				$fatal(1, "Missing command in self checker");
+		end
+		while(cmd.op == rst_op);
+
 		//
 		//      Add data error flag
 		//
@@ -90,49 +84,59 @@ class scoreboard extends uvm_subscriber #(result_s);
 			predicted.crc = nextCRC3_D37({predicted.C, 1'b0, flag});	
 		end
 		
-//		Print data for debug purpose
-//	    case(cmd.op) 
-//		    and_op : begin 
-//			    $display(" B:%b & A:%b", cmd.B, cmd.A);
-//		    end
-//		    or_op : begin 
-//			    $display(" B:%b | A:%b", cmd.B, cmd.A);
-//		    end
-//		    add_op : begin 
-//			    $display(" B:%b + A:%b", cmd.B, cmd.A);
-//		    end
-//		    sub_op : begin 
-//			    $display(" B:%b - A:%b", cmd.B, cmd.A);
-//		    end
-//	    endcase 
-//	    $display("C: %b, Exp: %b", t.C, predicted.C);
-//	    $display("CRC: %b, Exp: %b", t.crc, predicted.crc);
-//	    $display("Err: %b, Exp: %b", t.error, predicted.error);
-//	    $display("Flag: %b, Exp: %b", t.flag, predicted.flag);
 
-		
-	    
-	    
+
+	
 	   	if(t.error == 1'b1) begin
 		   if(predicted.error == 0) begin
 			   $display("--------------EXP_FRAME_ERROR------------------");
+		   	   print_data(cmd, predicted,t);
 		   end
 		   else if(t.err_flag != predicted.err_flag) begin
 		   	   $display("--------------WRONG_ERROR_FLAGS------------------");
+		   		print_data(cmd, predicted,t);
 		   end
 	   	end
 	   	else begin 
 		   	if(t.flag != predicted.flag) begin
 			   $display("--------------WRONG_FLAGS------------------");
+			   	print_data(cmd, predicted,t);
 			end
-		   	
-		   	if(t.C != predicted.C) begin
+		   	else if(t.C != predicted.C) begin
 			   $display("--------------WRONG_REULT------------------");
+			   print_data(cmd, predicted,t);
 			end
 	   	end
-	  
     endfunction : write
 
+    function print_data(command_s cmd, result_s predicted, result_s t);
+
+    	case(cmd.op) 
+		    and_op : begin 
+			    $display(" B:%b & A:%b", cmd.B, cmd.A);
+		    end
+		    or_op : begin 
+			    $display(" B:%b | A:%b", cmd.B, cmd.A);
+		    end
+		    add_op : begin 
+			    $display(" B:%b + A:%b", cmd.B, cmd.A);
+		    end
+		    sub_op : begin 
+			    $display(" B:%b - A:%b", cmd.B, cmd.A);
+		    end
+		    rsv_op : begin
+			    $display("Reserver command");
+		    end
+		    rst_op :begin
+				$display("Reset command");
+			end
+	    endcase 
+	    $display("C: %b, Exp: %b", t.C, predicted.C);
+	    $display("CRC: %b, Exp: %b", t.crc, predicted.crc);
+	    $display("Err: %b, Exp: %b", t.error, predicted.error);
+	    $display("Flag: %b, Exp: %b", t.flag, predicted.flag);
+    
+    endfunction
 endclass : scoreboard
 
 

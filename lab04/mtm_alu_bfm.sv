@@ -26,7 +26,9 @@ wire  	 sout;	// mtm_Alu serial out
 		reset_n = 1'b0;
     	@(negedge clk);
     	@(negedge clk);
-    	reset_n = 1'b1;   
+    	reset_n = 1'b1;  
+	   	repeat (50) 
+			@(negedge clk);
    endtask : reset_alu
    
    
@@ -59,7 +61,7 @@ wire  	 sout;	// mtm_Alu serial out
 		end
 		tx_command(q.pop_front());
 		
-		repeat (50) 
+		repeat (100) 
 			 @(negedge clk);
 	endtask
 	   
@@ -101,17 +103,29 @@ wire  	 sout;	// mtm_Alu serial out
 				
 				command.crc = tmp[3:0];
 				command.op = op2enum(tmp[6:4]);
-				//$display("Put command!!!!");
-				//$display("A:%g, B:%g, crc:%b", command.A, command.B, command.crc);
 				command_monitor_h.write_to_monitor(command);
 			end
 		end	: sin_monitor_loop
 	end : sin_monitor
 	
+	
+	always  begin : rst_monitor
+    	command_s command;
+    	command.op = rst_op;
+		@(posedge clk);
+		forever begin
+			@(negedge reset_n);
+        	command_monitor_h.write_to_monitor(command);
+					
+		end
+    
+	end : rst_monitor
+	
+	
 
 
 	result_monitor result_monitor_h;
-	always @(posedge clk) begin :sout_monitor
+	always begin :sout_monitor
 
 		bit[8:0] tmp;
 		result_s result;

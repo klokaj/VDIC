@@ -37,10 +37,11 @@ class random_tester extends base_tester;
 	  
       	op_choice = $random;
       	case (op_choice) inside
-        	[6'b000000 : 6'b001110] : return and_op; //0-14  / p = 23,43%
-        	[6'b001111 : 6'b011101] : return or_op;  //15-29 / p = 23,43%
-        	[6'b011110 : 6'b101100] : return sub_op; //30-44 / p = 23,43%
-        	[6'b101101 : 6'b111011] : return add_op; //45-59 / p = 23,43%
+        	[0 : 14] : return and_op; //0-14  / p = 23,43%
+        	[15 : 29] : return or_op;  //15-29 / p = 23,43%
+        	[30 : 44] : return sub_op; //30-44 / p = 23,43%
+        	[45 : 59] : return add_op; //45-59 / p = 23,43%
+        	60 : return rst_op;
         	default: return rsv_op;//$random;				     //60-63 / p = 6,25%
       	endcase // case (op_choice)
     endfunction : get_op

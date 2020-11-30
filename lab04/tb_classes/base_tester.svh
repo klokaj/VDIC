@@ -42,10 +42,9 @@ virtual class base_tester extends uvm_component;
 	    
         phase.raise_objection(this);
 	    
-	    //command.op = rst_op;
-	    //command_port.put(command);
-
-        repeat (500) begin : random_loop
+	    command.op = rst_op;
+	    command_port.put(command);
+        repeat (5000) begin : random_loop
 	        command.op = get_op();
 	        command.A = get_data();
 	        command.B = get_data();
