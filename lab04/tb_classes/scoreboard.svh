@@ -109,7 +109,7 @@ class scoreboard extends uvm_subscriber #(result_s);
 	   	end
     endfunction : write
 
-    function print_data(command_s cmd, result_s predicted, result_s t);
+    function void print_data(command_s cmd, result_s predicted, result_s t);
 
     	case(cmd.op) 
 		    and_op : begin 
