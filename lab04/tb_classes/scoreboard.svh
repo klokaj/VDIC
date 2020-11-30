@@ -36,8 +36,8 @@ class scoreboard extends uvm_subscriber #(result_s);
 		//while(!cmd_f.try_get(cmd)) begin
 		//	$display("Trying get");
 		//end
-		$display("Scor C:%d err:%b", t.C, t.error);
-		$display("Scor A:%d B:%d op:%b", cmd.A, cmd.B, cmd.op);
+		//$display("Scor C:%d err:%b", t.C, t.error);
+		//$display("Scor A:%d B:%d op:%b", cmd.A, cmd.B, cmd.op);
 		//cmd_f.get(cmd);
 		//$display("GOT!!!!!!!!!!!!!!!!!!!!!!!!1");
 	    
@@ -80,7 +80,7 @@ class scoreboard extends uvm_subscriber #(result_s);
 				end
 			endcase
 			flag[1] = (predicted.C == 0); //zero
-			flag[0] = (predicted.C == 1); //negative
+			flag[0] = (predicted.C[31] == 1); //negative
 			
 			predicted.flag.carry = flag[3];
 			predicted.flag.ovf = flag[2];
@@ -90,14 +90,31 @@ class scoreboard extends uvm_subscriber #(result_s);
 			predicted.crc = nextCRC3_D37({predicted.C, 1'b0, flag});	
 		end
 		
+//		Print data for debug purpose
+//	    case(cmd.op) 
+//		    and_op : begin 
+//			    $display(" B:%b & A:%b", cmd.B, cmd.A);
+//		    end
+//		    or_op : begin 
+//			    $display(" B:%b | A:%b", cmd.B, cmd.A);
+//		    end
+//		    add_op : begin 
+//			    $display(" B:%b + A:%b", cmd.B, cmd.A);
+//		    end
+//		    sub_op : begin 
+//			    $display(" B:%b - A:%b", cmd.B, cmd.A);
+//		    end
+//	    endcase 
+//	    $display("C: %b, Exp: %b", t.C, predicted.C);
+//	    $display("CRC: %b, Exp: %b", t.crc, predicted.crc);
+//	    $display("Err: %b, Exp: %b", t.error, predicted.error);
+//	    $display("Flag: %b, Exp: %b", t.flag, predicted.flag);
+
 		
-	    //
-	    // Compare results
-	    //
 	    
 	    
 	   	if(t.error == 1'b1) begin
-		   if(predicted.crc == 0) begin
+		   if(predicted.error == 0) begin
 			   $display("--------------EXP_FRAME_ERROR------------------");
 		   end
 		   else if(t.err_flag != predicted.err_flag) begin

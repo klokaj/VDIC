@@ -151,7 +151,7 @@ class coverage extends uvm_subscriber #(command_s);
 		B = t.B;
 		op_set = t.op;
 		
-		$display("CoV A:%d B:%d op:%b", A, B, op_set);
+		//$display("CoV A:%d B:%d op:%b", A, B, op_set);
 		op_cov.sample();
 		zeros_or_ones_on_ops.sample();
 	
