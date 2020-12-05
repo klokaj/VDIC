@@ -176,7 +176,7 @@ function [3:0] nextCRC4_D68;
 
 
 `include "coverage.svh"
-`include "base_tester.svh"
+
 `include "random_tester.svh"
 `include "add_tester.svh"
 `include "extream_val_tester.svh"
@@ -184,7 +184,10 @@ function [3:0] nextCRC4_D68;
 `include "driver.svh"
 `include "command_monitor.svh"
 `include "result_monitor.svh"
-
+`include "result_transaction.svh"
+`include "command_transaction.svh"
+`include "add_transaction.svh"
+`include "tester.svh"
 
 `include "env.svh"
 

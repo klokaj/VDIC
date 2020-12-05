@@ -26,20 +26,11 @@ class scoreboard extends uvm_subscriber #(result_s);
 	    cmd_f = new("cmd_f", this);
     endfunction : build_phase
 
-    function void write(result_s t);
-	  	bit[3:0] flag;
-		result_s predicted;
-	    command_s cmd;
-
-		do begin
-			if(!cmd_f.try_get(cmd))
-				$fatal(1, "Missing command in self checker");
-		end
-		while(cmd.op == rst_op);
-
-		//
-		//      Add data error flag
-		//
+    function result_transaction predict_result(command_transaction cmd);
+	    result_transaction predicted;
+	    bit[3:0] flag;
+	    predicted = new("predicted");
+	    
 		if( cmd.crc != nextCRC4_D68({cmd.B, cmd.A, 1'b1, cmd.op})) begin
 			predicted.error = 1;
 			predicted.err_flag.crc = 1;
@@ -82,61 +73,36 @@ class scoreboard extends uvm_subscriber #(result_s);
 			predicted.flag.neg = flag[0];
 		
 			predicted.crc = nextCRC3_D37({predicted.C, 1'b0, flag});	
-		end
-		
+		end	    
+	    return predicted;  
+    endfunction : predict_result
 
 
+    function void write(result_transaction t);
+	    string data_str;
+	    command_transaction cmd;
+	    result_transaction predicted;
 	
-	   	if(t.error == 1'b1) begin
-		   if(predicted.error == 0) begin
-			   $display("--------------EXP_FRAME_ERROR------------------");
-		   	   print_data(cmd, predicted,t);
-		   end
-		   else if(t.err_flag != predicted.err_flag) begin
-		   	   $display("--------------WRONG_ERROR_FLAGS------------------");
-		   		print_data(cmd, predicted,t);
-		   end
-	   	end
-	   	else begin 
-		   	if(t.flag != predicted.flag) begin
-			   $display("--------------WRONG_FLAGS------------------");
-			   	print_data(cmd, predicted,t);
-			end
-		   	else if(t.C != predicted.C) begin
-			   $display("--------------WRONG_REULT------------------");
-			   print_data(cmd, predicted,t);
-			end
-	   	end
+		do begin
+			if(!cmd_f.try_get(cmd))
+				$fatal(1, "Missing command in self checker");
+		end
+		while(cmd.op == rst_op);
+			
+		predicted = predict_result(cmd);
+		
+		data_str = {cmd.convert2string(),
+			" ==> Actual", t.convert2string(), 
+			"/Predicted", predicted.convert2string()};
+
+
+		if(!predicted.compare(t))
+			`uvm_error("SELF CHECKER", {"FAIL: ", data_str})
+		else
+			`uvm_info("SELF CHECKER", {"PASS: ", data_str}, UVM_HIGH)
+	   
+
     endfunction : write
-
-    function void print_data(command_s cmd, result_s predicted, result_s t);
-
-    	case(cmd.op) 
-		    and_op : begin 
-			    $display(" B:%b & A:%b", cmd.B, cmd.A);
-		    end
-		    or_op : begin 
-			    $display(" B:%b | A:%b", cmd.B, cmd.A);
-		    end
-		    add_op : begin 
-			    $display(" B:%b + A:%b", cmd.B, cmd.A);
-		    end
-		    sub_op : begin 
-			    $display(" B:%b - A:%b", cmd.B, cmd.A);
-		    end
-		    rsv_op : begin
-			    $display("Reserver command");
-		    end
-		    rst_op :begin
-				$display("Reset command");
-			end
-	    endcase 
-	    $display("C: %b, Exp: %b", t.C, predicted.C);
-	    $display("CRC: %b, Exp: %b", t.crc, predicted.crc);
-	    $display("Err: %b, Exp: %b", t.error, predicted.error);
-	    $display("Flag: %b, Exp: %b", t.flag, predicted.flag);
-    
-    endfunction
 endclass : scoreboard
 
 
