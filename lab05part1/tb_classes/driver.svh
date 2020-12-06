@@ -46,12 +46,7 @@ class driver extends uvm_component;
 			    	{tmp, crc} = q.pop_front();
 			    end
 		     	
-			     	
-			     	
 			    
-		     	
-		     	
-		     	
 		     	
 		     	q.push_back({1'b0, command.op, crc});  
 		        //$display("DRIVER: A %d %s B %d", command.A, command.op.name(), command.B);

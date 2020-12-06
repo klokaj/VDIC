@@ -11,11 +11,13 @@ class coverage extends uvm_subscriber #(command_transaction);
 	  option.name = "cg_op_cov";
 	  coverpoint op_set {
 	     // #A1 test all operations
-	     bins A1_single[] = {[and_op : rst_op]};
+	     bins A1_single[] = {add_op, or_op, and_op, sub_op};
 	  
-	     bins A2_twoops[] = ([and_op:sub_op] [* 2]);
-	     bins A3_op_after_reset[] = ( rst_op => [and_op:sub_op]);
-		 bins A4_op_after_err[] = (crc_err_op, data_err_op, op_err_op => [and_op : sub_op]);
+	     bins A2_twoops[] = ( add_op, or_op, and_op, sub_op [* 2]);
+		  
+		  
+	     bins A3_op_after_reset[] = ( rst_op => add_op, or_op, and_op, sub_op);
+		 bins A4_op_after_err[] = (crc_err_op, data_err_op, op_err_op => add_op, or_op, and_op, sub_op);
 		 bins A5_err_ops[] = {crc_err_op, data_err_op, op_err_op};
 		  
 	  }

@@ -19,21 +19,26 @@ class command_transaction extends uvm_transaction;
 	rand bit [31:0] B;
 	rand operation_t op;
 
-   //constraint data { A dist {32'h00000000:=1, [32'h00000001 : 32'hFFFFFFFE]:=1, 32'hFFFFFFFF:=1};
-   //                  B dist {32'h00000000:=1, [32'h00000001 : 32'hFFFFFFFE]:=1, 32'hFFFFFFFF:=1}; 			
-   //}
-   //constraint operation {
-	//   op dist{and_op := 10, or_op := 10, sub_op := 10, add_op := 10, rsv_op := 1, rst_op := 1};
-   //}
+   constraint data { A dist {32'h00000000:=1, [32'h00000001 : 32'hFFFFFFFE]:/10, 32'hFFFFFFFF:=1};
+                     B dist {32'h00000000:=1, [32'h00000001 : 32'hFFFFFFFE]:/10, 32'hFFFFFFFF:= 1}; 			
+   }
+   
+
+
+   constraint operation {
+	   op dist{and_op := 25, 
+		   or_op := 25, 
+		   sub_op := 25, 
+		   add_op := 25, 
+		   rst_op := 1, 
+		   crc_err_op := 1,
+		   data_err_op := 1,
+		   op_err_op := 1};
+   }
    
    
-   //constraint crc_sum {
-	//   crc dist{nextCRC4_D68({A, B, 1'b1, op}):=99, [4'b0000 : 4'b1111]:= 1};
-   //}
-   
-   //constraint crc_sum{
-//	   crc <= nextCRC4_D68({B, A, 1'b1, op});
-//   }
+
+
    
    
    
