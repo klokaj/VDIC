@@ -11,7 +11,8 @@ class driver extends uvm_component;
 	endfunction : build_phase
 	
 	task run_phase(uvm_phase phase);
-		bit[7:0] q[$];
+		bit [3:0] crc, tmp; 
+		bit [7:0] q[$], del_data;
 		command_transaction command;
 		
 		forever begin : command_loop
@@ -31,7 +32,28 @@ class driver extends uvm_component;
 		        q.push_back(command.A[23:16]);
 		        q.push_back(command.A[15:8]);
 		        q.push_back(command.A[7:0]);
-		     	q.push_back({1'b0, command.op, command.crc});  
+				
+				
+				
+				crc = nextCRC4_D68({command.B, command.A, 1'b1, command.op});
+		     	if(command.op == crc_err_op) begin
+				    tmp  = $random;
+				    while(crc == tmp)
+					    tmp = $random;
+				    crc = tmp;
+		     	end 
+		     	else if(command.op == data_err_op) begin
+			    	{tmp, crc} = q.pop_front();
+			    end
+		     	
+			     	
+			     	
+			    
+		     	
+		     	
+		     	
+		     	
+		     	q.push_back({1'b0, command.op, crc});  
 		        //$display("DRIVER: A %d %s B %d", command.A, command.op.name(), command.B);
 		        bfm.tx_packet(q);
 			end

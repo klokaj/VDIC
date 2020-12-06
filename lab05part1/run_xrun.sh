@@ -68,7 +68,7 @@ XRUN_ARGS="\
   -covfile xrun_covfile.txt \
   -uvm \
   +UVM_NO_RELNOTES \
-  +UVM_VERBOSITY=HIGH
+  +UVM_VERBOSITY=MEDIUM
 "
 #>>>
 #------------------------------------------------------------------------------

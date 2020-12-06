@@ -31,11 +31,15 @@ class scoreboard extends uvm_subscriber #(result_transaction);
 	    bit[3:0] flag;
 	    predicted = new("predicted");
 	    
-		if( cmd.crc != nextCRC4_D68({cmd.B, cmd.A, 1'b1, cmd.op})) begin
+	    if(cmd.op == data_err_op) begin
+			predicted.error = 1;
+		    predicted.err_flag.data = 1;
+		end
+		else if( cmd.op == crc_err_op) begin
 			predicted.error = 1;
 			predicted.err_flag.crc = 1;
 		end
-		else if( cmd.op == rsv_op) begin
+		else if( cmd.op == op_err_op) begin
 			predicted.error = 1;
 			predicted.err_flag.op = 1;
 		end

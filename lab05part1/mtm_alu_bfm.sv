@@ -78,6 +78,8 @@ wire  	 sout;	// mtm_Alu serial out
 
 	command_monitor command_monitor_h;
 	always  begin : sin_monitor
+		bit [3:0] crc, expected_crc; 
+		
 		bit[8:0] tmp;
 		command_transaction command;
 		SerialMonitor inMonitor; 
@@ -89,22 +91,43 @@ wire  	 sout;	// mtm_Alu serial out
 		forever begin : sin_monitor_loop
 			@(negedge clk);
 			inMonitor.sample(sin, reset_n);
-			if( inMonitor.get_lenght() >= 9 ) begin
-				for(int i = 0; i < 4; i++) begin
-					tmp = inMonitor.pop_front();
-					command.B[31-8*i -:8] = tmp[7:0];
-				end
 			
-				for(int i = 0; i < 4; i++) begin
-					tmp = inMonitor.pop_front();
-					command.A[31-8*i -:8] = tmp[7:0];
-				end
 			
-				tmp = inMonitor.pop_front();
+			
+			if( inMonitor.is_ctl_frame_inside()) begin
+				if(inMonitor.is_first_ctl_frame_at_index(8)) begin
+					for(int i = 0; i < 4; i++) begin
+						tmp = inMonitor.pop_front();
+						command.B[31-8*i -:8] = tmp[7:0];
+					end
+			
+					for(int i = 0; i < 4; i++) begin
+						tmp = inMonitor.pop_front();
+						command.A[31-8*i -:8] = tmp[7:0];
+					end
+					tmp = inMonitor.pop_front();
+					crc = tmp[3:0];
+					expected_crc = nextCRC4_D68({command.B, command.A, 1'b1, tmp[6:4]});
 				
-				command.crc = tmp[3:0];
-				command.op = op2enum(tmp[6:4]);
-				command_monitor_h.write_to_monitor(command);
+					if(crc == expected_crc)
+						command.op = op2enum(tmp[6:4]);
+					else 
+						command.op = crc_err_op;
+					
+					command_monitor_h.write_to_monitor(command);
+				end
+				else begin 
+					
+					while(! inMonitor.is_ctl_frame(0)) begin
+						tmp = inMonitor.pop_front();
+					end
+					
+					tmp = inMonitor.pop_front();
+					command.op = data_err_op;
+					command_monitor_h.write_to_monitor(command);
+					
+					
+				end
 			end
 		end	: sin_monitor_loop
 	end : sin_monitor

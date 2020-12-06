@@ -18,11 +18,10 @@ class command_transaction extends uvm_transaction;
 	rand bit [31:0] A;
 	rand bit [31:0] B;
 	rand operation_t op;
-	rand bit [3:0] crc; 
 
-   constraint data { A dist {32'h0000_0000:=1, [32'h0000_0001 : 32'hFFFF_FFFE]:=1, 32'hFFFF_FFFF:=1};
-                     B dist {32'h0000_0000:=1, [32'h0000_0001 : 32'hFFFF_FFFE]:=1, 32'hFFFF_FFFF:=1}; 			
-   }
+   //constraint data { A dist {32'h00000000:=1, [32'h00000001 : 32'hFFFFFFFE]:=1, 32'hFFFFFFFF:=1};
+   //                  B dist {32'h00000000:=1, [32'h00000001 : 32'hFFFFFFFE]:=1, 32'hFFFFFFFF:=1}; 			
+   //}
    //constraint operation {
 	//   op dist{and_op := 10, or_op := 10, sub_op := 10, add_op := 10, rsv_op := 1, rst_op := 1};
    //}
@@ -53,7 +52,7 @@ class command_transaction extends uvm_transaction;
       A = copied_transaction_h.A;
       B = copied_transaction_h.B;
       op = copied_transaction_h.op;
-      crc = copied_transaction_h.crc;
+
 
    endfunction : do_copy
 
@@ -80,8 +79,7 @@ class command_transaction extends uvm_transaction;
         same = super.do_compare(rhs, comparer) && 
                (compared_transaction_h.A == A) &&
                (compared_transaction_h.B == B) &&
-               (compared_transaction_h.op == op) && 
-               (compared_transaction_h.crc == crc);
+               (compared_transaction_h.op == op);
                
       return same;
    endfunction : do_compare
@@ -89,8 +87,8 @@ class command_transaction extends uvm_transaction;
 
    virtual function string convert2string();
       string s;
-      s = $sformatf("A: %2h  B: %2h op: %s  crc:%b \n",
-                        A, B, op.name(), crc );
+      s = $sformatf("A: %2h  B: %2h op: %s  \n",
+                        A, B, op.name());
       return s;
    endfunction : convert2string
 

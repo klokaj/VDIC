@@ -10,10 +10,17 @@ package mtm_alu_pkg;
     	or_op = 3'b001, 
      	add_op = 3'b100,
        	sub_op = 3'b101,
-       	rsv_op = 3'b011,
+       	
+       	op_err_op = 3'b011,
+       	crc_err_op = 3'b110,
+       	data_err_op = 3'b010,
+       	
      	rst_op = 3'b111
     } operation_t;
 	
+
+	
+
 	
 	
 	

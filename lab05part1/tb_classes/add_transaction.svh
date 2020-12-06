@@ -1,6 +1,6 @@
 
 
-
+/*
 class add_transaction extends command_transaction; 
 	`uvm_object_utils(add_transaction)
 	
@@ -12,4 +12,4 @@ class add_transaction extends command_transaction;
 	endfunction
 	
 	
-endclass : add_transaction
+endclass : add_transaction*/

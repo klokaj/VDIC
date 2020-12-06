@@ -40,9 +40,9 @@ class tester extends uvm_component;
         repeat (5000) begin : random_loop
 	        command = command_transaction::type_id::create("command");
 	       
-	        if(command.randomize())
-		        `uvm_fatal("TESTER", "Randomization failed");
-	        //command.randomize();
+	        //if(command.randomize())
+		    //    `uvm_fatal("TESTER", "Randomization failed");
+	        command.randomize();
 	        $display("A:%b, B:%b", command.A, command.B);
 	        command_port.put(command);
         end  
