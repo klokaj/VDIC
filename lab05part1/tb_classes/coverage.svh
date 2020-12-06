@@ -1,10 +1,10 @@
 
-class coverage extends uvm_subscriber #(command_s);
+class coverage extends uvm_subscriber #(command_transaction);
 	`uvm_component_utils(coverage)
 
-	protected bit  [31:0] 	A;   //data in  A
-	protected bit  [31:0] 	B;	// data in B
-	protected operation_t  	op_set;	
+	bit  [31:0] 	A;   //data in  A
+	bit  [31:0] 	B;	// data in B
+	operation_t  	op_set;	
 
 	
 	covergroup op_cov;
@@ -78,7 +78,7 @@ class coverage extends uvm_subscriber #(command_s);
       	zeros_or_ones_on_ops = new();
 	endfunction
 	
-	function void write(command_s t);
+	function void write(command_transaction t);
 		A = t.A;
 		B = t.B;
 		op_set = t.op;

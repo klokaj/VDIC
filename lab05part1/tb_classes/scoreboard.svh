@@ -13,10 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-class scoreboard extends uvm_subscriber #(result_s);
+class scoreboard extends uvm_subscriber #(result_transaction);
 
     `uvm_component_utils(scoreboard)
-	uvm_tlm_analysis_fifo #(command_s) cmd_f;
+	uvm_tlm_analysis_fifo #(command_transaction) cmd_f;
 
     function new (string name, uvm_component parent);
         super.new(name, parent);
@@ -91,9 +91,9 @@ class scoreboard extends uvm_subscriber #(result_s);
 			
 		predicted = predict_result(cmd);
 		
-		data_str = {cmd.convert2string(),
+		data_str = {"\n", cmd.convert2string(),
 			" ==> Actual", t.convert2string(), 
-			"/Predicted", predicted.convert2string()};
+			"Predicted", predicted.convert2string()};
 
 
 		if(!predicted.compare(t))

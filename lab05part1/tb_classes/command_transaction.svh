@@ -18,20 +18,23 @@ class command_transaction extends uvm_transaction;
 	rand bit [31:0] A;
 	rand bit [31:0] B;
 	rand operation_t op;
-	bit [3:0] crc; 
+	rand bit [3:0] crc; 
 
-   constraint data { A dist {8'h0000:=1, [8'h0001 : 8'hFFFE]:=1, 8'hFFFF:=1};
-                     B dist {8'h0000:=1, [8'h0001 : 8'hFFFE]:=1, 8'hFFFF:=1};} 
-   
-   
-   constraint operation {
-	   op dist{and_op := 10, or_op := 10, sub_op := 10, add_op := 10, rsv_op := 1, rst_op := 1};
+   constraint data { A dist {32'h0000_0000:=1, [32'h0000_0001 : 32'hFFFF_FFFE]:=1, 32'hFFFF_FFFF:=1};
+                     B dist {32'h0000_0000:=1, [32'h0000_0001 : 32'hFFFF_FFFE]:=1, 32'hFFFF_FFFF:=1}; 			
    }
+   //constraint operation {
+	//   op dist{and_op := 10, or_op := 10, sub_op := 10, add_op := 10, rsv_op := 1, rst_op := 1};
+   //}
    
    
-   constraint crc_sum {
-	   crc dist{nextCRC4_D68({A, B, 1'b1, op}):=99, [4'b0000 : 4'b1111]:= 1};
-   }
+   //constraint crc_sum {
+	//   crc dist{nextCRC4_D68({A, B, 1'b1, op}):=99, [4'b0000 : 4'b1111]:= 1};
+   //}
+   
+   //constraint crc_sum{
+//	   crc <= nextCRC4_D68({B, A, 1'b1, op});
+//   }
    
    
    
@@ -86,7 +89,7 @@ class command_transaction extends uvm_transaction;
 
    virtual function string convert2string();
       string s;
-      s = $sformatf("A: %2h  B: %2h op: %s  crc:%b",
+      s = $sformatf("A: %2h  B: %2h op: %s  crc:%b \n",
                         A, B, op.name(), crc );
       return s;
    endfunction : convert2string

@@ -14,14 +14,6 @@ package mtm_alu_pkg;
      	rst_op = 3'b111
     } operation_t;
 	
-
-	
-	typedef struct packed {
-		bit [31:0] A;
-		bit [31:0] B;
-		operation_t op;
-		bit [3:0] crc; 
-	} command_s;
 	
 	
 	
@@ -174,26 +166,21 @@ function [3:0] nextCRC4_D68;
 
 
 
-
+`include "command_transaction.svh"
+//`include "add_transaction.svh"
+`include "result_transaction.svh"
 `include "coverage.svh"
-
-`include "random_tester.svh"
-`include "add_tester.svh"
-`include "extream_val_tester.svh"
+`include "tester.svh"
 `include "scoreboard.svh"
 `include "driver.svh"
 `include "command_monitor.svh"
 `include "result_monitor.svh"
-`include "result_transaction.svh"
-`include "command_transaction.svh"
-`include "add_transaction.svh"
-`include "tester.svh"
 
 `include "env.svh"
 
 `include "random_test.svh"
-`include "add_test.svh"
-`include "extream_val_test.svh"
+//`include "add_test.svh"
+
 
 
 

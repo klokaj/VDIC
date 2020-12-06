@@ -2,7 +2,7 @@ class driver extends uvm_component;
 	`uvm_component_utils(driver)
 	
 	virtual mtm_alu_bfm bfm;
-	uvm_get_port #(command_s) command_port;
+	uvm_get_port #(command_transaction) command_port;
 	
 	function void build_phase(uvm_phase phase);
 		if(!uvm_config_db #(virtual mtm_alu_bfm)::get(null, "*", "bfm", bfm))
@@ -12,11 +12,12 @@ class driver extends uvm_component;
 	
 	task run_phase(uvm_phase phase);
 		bit[7:0] q[$];
-		command_s command;
+		command_transaction command;
 		
 		forever begin : command_loop
 			command_port.get(command);
 			if(command.op == rst_op) begin 
+				//$display("DRIVER, reseting_ALU");
 				bfm.reset_alu();	
 			end
 			else begin
@@ -31,6 +32,7 @@ class driver extends uvm_component;
 		        q.push_back(command.A[15:8]);
 		        q.push_back(command.A[7:0]);
 		     	q.push_back({1'b0, command.op, command.crc});  
+		        //$display("DRIVER: A %d %s B %d", command.A, command.op.name(), command.B);
 		        bfm.tx_packet(q);
 			end
 	        

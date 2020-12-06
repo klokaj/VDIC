@@ -22,7 +22,10 @@ class result_transaction extends uvm_transaction;
 	flags_s flag;
 	err_flags_s err_flag;
 
-   
+   function new (string name = "");
+      super.new(name);
+   endfunction : new
+      
    virtual function void do_copy(uvm_object rhs);
       result_transaction copied_transaction_h;
 
@@ -61,31 +64,26 @@ class result_transaction extends uvm_transaction;
 	  	$fatal(1, "Tried to compare null transaction");
 	  
 	  same = super.do_compare(rhs, comparer);
-	  $case(RHS, rhs);
+	  $cast(RHS, rhs);
 	  
 	  same = ( error == RHS.error ) && same;
-	  same = (C && RHS.C) && same;
-	  same = (crc && RHS.crc) && same;
-	  same = (err_flag && RHS.err_flag) && same;
-	  same = (flag && RHS.flag) && same;
+	  same = (C == RHS.C) && same;
+	  same = (crc == RHS.crc) && same;
+	  same = (err_flag == RHS.err_flag) && same;
+	  same = (flag == RHS.flag) && same;
 	  
-	  
-	 
-               
       return same;
    endfunction : do_compare
 
 
    virtual function string convert2string();
       string s;
-      s = $sformatf("C: %D  error:%b ",
-                        C, error );
+      s = $sformatf("C: %D  error:%b f:%b: err_f:%b  crc%b \n",
+                        C, error, flag, err_flag, crc );
       return s;
    endfunction : convert2string
 
-   function new (string name = "");
-      super.new(name);
-   endfunction : new
+
 
 endclass : result_transaction
 

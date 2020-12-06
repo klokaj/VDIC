@@ -3,9 +3,9 @@
 class result_monitor extends uvm_component;
     `uvm_component_utils(result_monitor)
 
-    uvm_analysis_port #(result_s) ap;
+    uvm_analysis_port #(result_transaction) ap;
 
-    function void write_to_monitor(result_s r);
+    function void write_to_monitor(result_transaction r);
 //        $display ("RESULT MONITOR: resultA: 0x%0h",r);
         ap.write(r);
     endfunction : write_to_monitor

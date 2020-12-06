@@ -79,11 +79,12 @@ wire  	 sout;	// mtm_Alu serial out
 	command_monitor command_monitor_h;
 	always  begin : sin_monitor
 		bit[8:0] tmp;
-		command_s command;
+		command_transaction command;
 		SerialMonitor inMonitor; 
 		operation_t op;
 		
 		inMonitor = new();
+		command = new("command");
 		
 		forever begin : sin_monitor_loop
 			@(negedge clk);
@@ -110,15 +111,14 @@ wire  	 sout;	// mtm_Alu serial out
 	
 	
 	always  begin : rst_monitor
-    	command_s command;
+    	command_transaction command;
+		command = new("command");
     	command.op = rst_op;
 		@(posedge clk);
 		forever begin
 			@(negedge reset_n);
-        	command_monitor_h.write_to_monitor(command);
-					
+        	command_monitor_h.write_to_monitor(command);	
 		end
-    
 	end : rst_monitor
 	
 	
@@ -128,12 +128,14 @@ wire  	 sout;	// mtm_Alu serial out
 	always begin :sout_monitor
 
 		bit[8:0] tmp;
-		result_s result;
+		result_transaction result;
 		SerialMonitor outMonitor; 
 		
 		outMonitor = new();
 		
+		
 		forever begin : sout_monitor_loop
+			result = new();
 			@(negedge clk);
 			outMonitor.sample(sout, reset_n);
 			
