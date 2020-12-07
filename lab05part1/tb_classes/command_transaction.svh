@@ -19,30 +19,18 @@ class command_transaction extends uvm_transaction;
 	rand bit [31:0] B;
 	rand operation_t op;
 
-   constraint data { A dist {32'h00000000:=1, [32'h00000001 : 32'hFFFFFFFE]:/10, 32'hFFFFFFFF:=1};
-                     B dist {32'h00000000:=1, [32'h00000001 : 32'hFFFFFFFE]:/10, 32'hFFFFFFFF:= 1}; 			
-   }
-   
 
-
-   constraint operation {
-	   op dist{and_op := 25, 
-		   or_op := 25, 
-		   sub_op := 25, 
-		   add_op := 25, 
-		   rst_op := 1, 
-		   crc_err_op := 1,
-		   data_err_op := 1,
-		   op_err_op := 1};
-   }
+//   constraint operation {
+//	   op dist{and_op := 25, 
+//		   or_op := 25, 
+//		   sub_op := 25, 
+//		   add_op := 25, 
+//		   rst_op := 1, 
+//		   crc_err_op := 1,
+//		   data_err_op := 1,
+//		   op_err_op := 1};
+//   }
    
-   
-
-
-   
-   
-   
-
    virtual function void do_copy(uvm_object rhs);
       command_transaction copied_transaction_h;
 
