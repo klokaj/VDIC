@@ -177,8 +177,6 @@ function [3:0] nextCRC4_D68;
 
 
 `include "command_transaction.svh"
-`include "add_transaction.svh"
-`include "minmax_transaction.svh"
 `include "result_transaction.svh"
 `include "coverage.svh"
 `include "tester.svh"
@@ -195,18 +193,6 @@ function [3:0] nextCRC4_D68;
 
 
 `include "dual_test.svh"
-
-
-
-
-`include "random_test.svh"
-`include "minmax_test.svh"
-
-
-
-//`include "add_test.svh"
-
-
 
 
 
