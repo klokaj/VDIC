@@ -171,6 +171,15 @@ function [3:0] nextCRC4_D68;
      endfunction
 
 
+`include "sequence_item.svh"
+	// used insted of the sequencer class
+	typedef uvm_sequencer #(sequence_item) sequencer;
+`include "minmax_sequence_item.svh"
+
+
+
+`include "random_sequence.svh"
+`include "minmax_sequence.svh"
 
 
 `include "command_transaction.svh"
@@ -186,13 +195,14 @@ function [3:0] nextCRC4_D68;
 
 `include "env.svh"
 
-`include "random_test.svh"
-`include "minmax_test.svh"
+
 //`include "add_test.svh"
 
 
 
-
+`include "alu_base_test.svh"
+`include "random_test.svh"
+`include "minmax_test.svh"
 
 
 

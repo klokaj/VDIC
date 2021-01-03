@@ -1,15 +1,21 @@
-class minmax_test extends random_test;
+class minmax_test extends alu_base_test;
     `uvm_component_utils(minmax_test)
 
 	
+	
+	minmax_sequence minmax_h;
+	
+	
 	function new (string name, uvm_component parent);
 		super.new(name, parent);
+		minmax_h = new("minmax_h");
 	endfunction : new
 	
-	function void build_phase(uvm_phase phase);
-		super.build_phase(phase);
-		command_transaction::type_id::set_type_override(minmax_transaction::get_type());
-	endfunction : build_phase
+	task run_phase(uvm_phase phase);
+		phase.raise_objection(this);
+		minmax_h.start(sequencer_h);
+		phase.drop_objection(this);
+	endtask : run_phase
 	
 
-endclass
+endclass : minmax_test

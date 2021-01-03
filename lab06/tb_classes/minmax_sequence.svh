@@ -13,22 +13,33 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-class random_test extends alu_base_test;
-    `uvm_component_utils(random_test)
+class minmax_sequence extends uvm_sequence #(sequence_item);
+    `uvm_object_utils(minmax_sequence)
 
-	random_sequence random_h;
-	
-	
-	function new (string name, uvm_component parent);
-		super.new(name, parent);
-		random_h = new("random_h");
-	endfunction : new
-	
-	task run_phase(uvm_phase phase);
-		phase.raise_objection(this);
-		random_h.start(sequencer_h);
-		phase.drop_objection(this);
-	endtask : run_phase
-endclass
+    sequence_item command;
+
+    function new(string name = "minmax_sequence");
+        super.new(name);
+    endfunction : new
+
+
+	task body();
+		`uvm_info("SEQ_MINMAX", "", UVM_MEDIUM);
+		
+		repeat(100) begin
+			`uvm_do(command);
+			command.print();
+		end
+	endtask : body
+
+endclass : random_sequence
+
+
+
+
+
+
+
+
 
 

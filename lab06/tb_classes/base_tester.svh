@@ -20,7 +20,7 @@
 // irun requires abstract class when using virtual functions
 // note: irun warns about the virtual class instantiation, this will be an
 // error in future releases.
-virtual class base_tester extends uvm_component;
+/*virtual class base_tester extends uvm_component;
     `uvm_component_utils(base_tester)
 
 	uvm_put_port #(command_s) command_port;
@@ -84,3 +84,4 @@ endclass : base_tester
 //	        bfm.tx_packet(q);
 //	        
 //	        //if(get_reset()) bfm.reset_alu();
+*/
