@@ -17,7 +17,6 @@ virtual class alu_base_test extends uvm_test;
     // The class will never be instantiated, does not need
     // `uvm_component_utils() macro
 
-	
     env env_h;
     sequencer sequencer_h;
 
@@ -38,5 +37,5 @@ virtual class alu_base_test extends uvm_test;
         super.new(name,parent);
     endfunction : new
 
-endclass
+endclass :alu_base_test
 

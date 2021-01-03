@@ -1,5 +1,5 @@
 
-class coverage extends uvm_subscriber #(command_transaction);
+class coverage extends uvm_subscriber #(sequence_item);
 	`uvm_component_utils(coverage)
 
 	bit  [31:0] 	A;   //data in  A
@@ -82,7 +82,7 @@ class coverage extends uvm_subscriber #(command_transaction);
       	zeros_or_ones_on_ops = new();
 	endfunction
 	
-	function void write(command_transaction t);
+	function void write(sequence_item t);
 		A = t.A;
 		B = t.B;
 		op_set = t.op;

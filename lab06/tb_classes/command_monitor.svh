@@ -3,7 +3,7 @@
 class command_monitor extends uvm_component;
     `uvm_component_utils(command_monitor)
 
-    uvm_analysis_port #(command_transaction) ap;
+    uvm_analysis_port #(sequence_item) ap;
 
     function void build_phase(uvm_phase phase);
         virtual mtm_alu_bfm bfm;
@@ -17,7 +17,7 @@ class command_monitor extends uvm_component;
 
     endfunction : build_phase
 
-    function void write_to_monitor(command_transaction cmd);
+    function void write_to_monitor(sequence_item cmd);
 //        $display("COMMAND MONITOR: A:0x%2h B:0x%2h op: %s", cmd.A, cmd.B, cmd.op.name());
         ap.write(cmd);
     endfunction : write_to_monitor

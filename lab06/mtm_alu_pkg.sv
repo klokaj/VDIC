@@ -176,18 +176,15 @@ function [3:0] nextCRC4_D68;
 	typedef uvm_sequencer #(sequence_item) sequencer;
 `include "minmax_sequence_item.svh"
 
-
-
+// sequences
 `include "random_sequence.svh"
 `include "minmax_sequence.svh"
 
-
-`include "command_transaction.svh"
-`include "add_transaction.svh"
-`include "minmax_transaction.svh"
+// result transaction class - can be converted into sequence
 `include "result_transaction.svh"
+
+//testbench components
 `include "coverage.svh"
-`include "tester.svh"
 `include "scoreboard.svh"
 `include "driver.svh"
 `include "command_monitor.svh"
@@ -199,7 +196,7 @@ function [3:0] nextCRC4_D68;
 //`include "add_test.svh"
 
 
-
+// tests
 `include "alu_base_test.svh"
 `include "random_test.svh"
 `include "minmax_test.svh"

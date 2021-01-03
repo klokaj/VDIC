@@ -16,7 +16,7 @@
 class minmax_sequence extends uvm_sequence #(sequence_item);
     `uvm_object_utils(minmax_sequence)
 
-    sequence_item command;
+    minmax_sequence_item command;
 
     function new(string name = "minmax_sequence");
         super.new(name);
@@ -28,11 +28,11 @@ class minmax_sequence extends uvm_sequence #(sequence_item);
 		
 		repeat(100) begin
 			`uvm_do(command);
-			command.print();
+			//command.print();
 		end
 	endtask : body
 
-endclass : random_sequence
+endclass : minmax_sequence
 
 
 

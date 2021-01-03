@@ -81,7 +81,7 @@ wire  	 sout;	// mtm_Alu serial out
 		bit [3:0] crc, expected_crc; 
 		
 		bit[8:0] tmp;
-		command_transaction command;
+		sequence_item command;
 		SerialMonitor inMonitor; 
 		operation_t op;
 		
@@ -134,7 +134,7 @@ wire  	 sout;	// mtm_Alu serial out
 	
 	
 	always  begin : rst_monitor
-    	command_transaction command;
+    	sequence_item command;
 		command = new("command");
     	command.op = rst_op;
 		@(posedge clk);
