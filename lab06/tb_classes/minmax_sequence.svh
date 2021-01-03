@@ -16,18 +16,26 @@
 class minmax_sequence extends uvm_sequence #(sequence_item);
     `uvm_object_utils(minmax_sequence)
 
-    minmax_sequence_item command;
+    sequence_item command;
 
     function new(string name = "minmax_sequence");
         super.new(name);
     endfunction : new
 
 
+    //constraint minmax_c  { A dist {32'h00000000:=1, 32'hFFFFFFFF:=1};
+    //                  B dist {32'h00000000:=1, 32'hFFFFFFFF:=1}; }
+
 	task body();
 		`uvm_info("SEQ_MINMAX", "", UVM_MEDIUM);
 		
+		
+		`uvm_do_with(req, {op == rst_op;});
+		
 		repeat(100) begin
-			`uvm_do(command);
+
+			`uvm_do_with(req, { A dist {32'h00000000:=1, 32'hFFFFFFFF:=1};
+                      B dist {32'h00000000:=1, 32'hFFFFFFFF:=1}; });
 			//command.print();
 		end
 	endtask : body
