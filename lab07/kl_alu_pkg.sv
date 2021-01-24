@@ -189,6 +189,8 @@ endfunction
 	`include "kl_alu_result_monitor.svh"
 	// Coverage Collector
 	`include "kl_alu_coverage_collector.svh"
+	// Scoreboard
+	`include "kl_alu_scoreboard.svh"
 	// Driver
 	`include "kl_alu_driver.svh"
 	// Sequencer

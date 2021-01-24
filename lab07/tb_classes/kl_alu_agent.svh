@@ -23,6 +23,7 @@ class kl_alu_agent extends uvm_agent;
 	kl_alu_monitor m_monitor;
 	kl_alu_result_monitor m_result_monitor;
 	kl_alu_coverage_collector m_coverage_collector;
+	kl_alu_scoreboard m_scoreboard;
 
 	// TODO Add fields here
 	
@@ -61,13 +62,19 @@ class kl_alu_agent extends uvm_agent;
 			// Create the sequencer
 			m_sequencer = kl_alu_sequencer::type_id::create("m_sequencer", this);
 		end
+		
+		m_scoreboard      = kl_alu_scoreboard::type_id::create("m_scoreboard",this);
 	endfunction : build_phase
 
 	virtual function void connect_phase(uvm_phase phase);
 		if(m_config_obj.m_coverage_enable) begin
 			m_monitor.m_collected_item_port.connect(m_coverage_collector.m_monitor_port);
-			//m_result_monitor.m_collected_result_item_port.connect
 		end
+		
+		//connect scoreboard
+		m_result_monitor.m_collected_result_item_port.connect(m_scoreboard.analysis_export);;
+		m_monitor.m_collected_item_port.connect(m_scoreboard.cmd_f.analysis_export);
+		
 
 		if(m_config_obj.m_is_active == UVM_ACTIVE) begin
 			m_driver.seq_item_port.connect(m_sequencer.seq_item_export);
