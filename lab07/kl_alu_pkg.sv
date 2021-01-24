@@ -183,8 +183,10 @@ endfunction
 	`include "kl_alu_config_obj.svh"
 	// Sequence item
 	`include "kl_alu_item.svh"
+	`include "kl_alu_result_item.svh"
 	// Monitor
 	`include "kl_alu_monitor.svh"
+	`include "kl_alu_result_monitor.svh"
 	// Coverage Collector
 	`include "kl_alu_coverage_collector.svh"
 	// Driver
@@ -201,5 +203,7 @@ endfunction
 	// Tests
 	`include "kl_alu_base_test.svh"
 	`include "kl_alu_example_test.svh"
+	`include "kl_alu_minmax_test.svh"
+	`include "kl_alu_random_test.svh"
 
 endpackage : kl_alu_pkg

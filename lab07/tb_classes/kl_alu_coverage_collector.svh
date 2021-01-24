@@ -43,6 +43,7 @@ class kl_alu_coverage_collector extends uvm_component;
 	endgroup : item_cg
 	
 	covergroup op_cov;
+	  option.per_instance = 1;
 	  option.name = "cg_op_cov";
 	  coverpoint op_set {
 	     // #A1 test all operations
@@ -59,6 +60,7 @@ class kl_alu_coverage_collector extends uvm_component;
 	endgroup
 	
 	covergroup zeros_or_ones_on_ops;
+		option.per_instance = 1;
 	  	option.name = "cg_zeros_or_ones_on_ops";
 	  	all_ops : coverpoint op_set {
 	    	ignore_bins null_ops = {op_err_op, data_err_op, crc_err_op,  rst_op};

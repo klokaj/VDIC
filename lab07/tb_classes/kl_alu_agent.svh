@@ -21,6 +21,7 @@ class kl_alu_agent extends uvm_agent;
 	kl_alu_driver m_driver;
 	kl_alu_sequencer m_sequencer;
 	kl_alu_monitor m_monitor;
+	kl_alu_result_monitor m_result_monitor;
 	kl_alu_coverage_collector m_coverage_collector;
 
 	// TODO Add fields here
@@ -41,8 +42,10 @@ class kl_alu_agent extends uvm_agent;
 
 		// Propagate the configuration object to monitor
 		uvm_config_db#(kl_alu_config_obj)::set(this, "m_monitor", "m_config_obj", m_config_obj);
+		uvm_config_db#(kl_alu_config_obj)::set(this, "m_resut_monitor", "m_config_obj", m_config_obj);
 		// Create the monitor
 		m_monitor = kl_alu_monitor::type_id::create("m_monitor", this);
+		m_result_monitor = kl_alu_result_monitor::type_id::create("m_result_monitor", this);
 
 		if(m_config_obj.m_coverage_enable) begin
 			m_coverage_collector = kl_alu_coverage_collector::type_id::create("m_coverage_collector", this);
@@ -63,6 +66,7 @@ class kl_alu_agent extends uvm_agent;
 	virtual function void connect_phase(uvm_phase phase);
 		if(m_config_obj.m_coverage_enable) begin
 			m_monitor.m_collected_item_port.connect(m_coverage_collector.m_monitor_port);
+			//m_result_monitor.m_collected_result_item_port.connect
 		end
 
 		if(m_config_obj.m_is_active == UVM_ACTIVE) begin

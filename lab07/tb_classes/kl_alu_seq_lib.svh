@@ -91,4 +91,48 @@ class kl_alu_example_sequence extends kl_alu_base_sequence;
 
 endclass : kl_alu_example_sequence
 
+
+class kl_alu_minmax_sequence extends kl_alu_base_sequence;
+    `uvm_object_utils(kl_alu_minmax_sequence)
+
+
+    function new(string name = "kl_alu_minmax_sequence");
+        super.new(name);
+    endfunction : new
+
+
+	task body();
+		`uvm_info("SEQ_MINMAX", "", UVM_MEDIUM);
+		`uvm_do_with(req, {op == rst_op;});
+		repeat(100) begin
+			`uvm_do_with(req, { A dist {32'h00000000:=1, 32'hFFFFFFFF:=1};
+                      B dist {32'h00000000:=1, 32'hFFFFFFFF:=1}; });
+			get_response(rsp);
+		end
+	endtask : body
+
+endclass : kl_alu_minmax_sequence
+
+
+class kl_alu_random_sequence extends kl_alu_base_sequence;
+    `uvm_object_utils(kl_alu_random_sequence)
+    
+    function new(string name = "kl_alu_random_sequence");
+        super.new(name);
+    endfunction : new
+
+    task body();
+        `uvm_info("SEQ_RANDOM","",UVM_MEDIUM)
+       
+        repeat (5000) begin : random_loop
+			`uvm_do_with(req,
+				{ /* TODO add constraints here*/ } );
+	        get_response(rsp);
+        end : random_loop
+    endtask : body
+
+endclass : kl_alu_random_sequence
+
+
+
 `endif // IFNDEF_GUARD_kl_alu_seq_lib

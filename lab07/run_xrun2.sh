@@ -31,7 +31,8 @@
 #TESTS=(minmax_test);
 #TESTS=(random_test minmax_test);
 #TESTS=(random_test);
-TESTS=(kl_alu_example_test);
+#TESTS=(kl_alu_example_test);
+TESTS=(kl_alu_minmax_test kl_alu_random_test);
 #------------------------------------------------------------------------------
 # MAIN
 function main(){
@@ -85,7 +86,7 @@ XRUN_ARGS="\
   -uvm \
   -uvmhome /cad/XCELIUM1909/tools/methodology/UVM/CDNS-1.2/sv\
   +UVM_NO_RELNOTES \
-  +UVM_VERBOSITY=LOW
+  +UVM_VERBOSITY=MEDIUM
 "
 #>>>
 #------------------------------------------------------------------------------
