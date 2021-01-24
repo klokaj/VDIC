@@ -64,7 +64,8 @@ class kl_alu_example_sequence extends kl_alu_base_sequence;
 	virtual task body();
 		`uvm_do_with(req,
 			{ /* TODO add constraints here*/ } )
-		get_response(rsp);
+	
+	//	get_response(rsp);
 	endtask : body
 
 endclass : kl_alu_example_sequence

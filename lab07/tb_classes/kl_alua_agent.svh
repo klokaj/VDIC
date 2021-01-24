@@ -1,10 +1,10 @@
 /******************************************************************************
 * DVT CODE TEMPLATE: agent
-* Created by klokaj on Jan 24, 2021
+* Created by klokaj on Jan 22, 2021
 * uvc_company = kl, uvc_name = alu
 *******************************************************************************/
 
-`ifndef IFNDEF_GUARD_kl_alu_agent
+/*`ifndef IFNDEF_GUARD_kl_alu_agent
 `define IFNDEF_GUARD_kl_alu_agent
 
 //------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ class kl_alu_agent extends uvm_agent;
 	kl_alu_monitor m_monitor;
 	kl_alu_coverage_collector m_coverage_collector;
 
-	// TODO Add fields here
+	// Add fields here
 	
 
 	`uvm_component_utils(kl_alu_agent)
@@ -35,10 +35,11 @@ class kl_alu_agent extends uvm_agent;
 	virtual function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
 
+
 		// Get the configuration object
 		if(!uvm_config_db#(kl_alu_config_obj)::get(this, "", "m_config_obj", m_config_obj))
 			`uvm_fatal("NOCONFIG", {"Config object must be set for: ", get_full_name(), ".m_config_obj"})
-
+			
 		// Propagate the configuration object to monitor
 		uvm_config_db#(kl_alu_config_obj)::set(this, "m_monitor", "m_config_obj", m_config_obj);
 		// Create the monitor
@@ -72,3 +73,4 @@ class kl_alu_agent extends uvm_agent;
 endclass : kl_alu_agent
 
 `endif // IFNDEF_GUARD_kl_alu_agent
+*/
