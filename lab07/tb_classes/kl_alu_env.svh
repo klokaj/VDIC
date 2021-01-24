@@ -22,11 +22,12 @@ class kl_alu_env extends uvm_env;
 
 	function new(string name, uvm_component parent);
 		super.new(name, parent);
+				$display("Create env");
 	endfunction : new
 
 	virtual function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
-
+		$display("Create env");
 		begin
 			// Create the configuration object if it has not been set
 			kl_alu_config_obj config_obj;

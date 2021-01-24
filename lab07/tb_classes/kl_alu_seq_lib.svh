@@ -61,10 +61,31 @@ class kl_alu_example_sequence extends kl_alu_base_sequence;
 		super.new(name);
 	endfunction : new
 
+
+	kl_alu_item command;
 	virtual task body();
-		`uvm_do_with(req,
-			{ /* TODO add constraints here*/ } )
+		$display("kl_alu_example_sequence body start");
+//        `uvm_info("SEQ_RANDOM","",UVM_MEDIUM)
+//        
+//       command = sequence_item::type_id::create("command");
+//        `uvm_create(command);
+//        
+//        repeat (5000) begin : random_loop
+////         start_item(command);
+////         assert(command.randomize());
+////         finish_item(command);
+//	        $display("sending");
+//           `uvm_rand_send(command)
+//        end : random_loop
 	
+	
+		repeat(5000) begin
+			`uvm_do_with(req,
+				{ /* TODO add constraints here*/ } );
+			get_response(rsp);
+		end
+		
+		$display("kl_alu_example_sequence body end");
 	//	get_response(rsp);
 	endtask : body
 
