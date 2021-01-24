@@ -85,18 +85,79 @@ class kl_alu_monitor extends uvm_monitor;
 	endtask : run_phase
 
 	virtual protected task collect_items();
-		forever begin
+		//forever begin
 			// FIXME Fill this place with the logic for collecting the data
 			// ...
-			wait(0);
+			//wait(0);
+		bit [3:0] crc, expected_crc; 
+		
+		bit[8:0] tmp;
+		kl_alu_item command;
+		SerialMonitor inMonitor; 
+		operation_t op;
+		
+		inMonitor = new();
+		command = new("command");
+		
+		forever begin : sin_monitor_loop
+			@(negedge m_kl_alu_vif.clk);
+			inMonitor.sample(m_kl_alu_vif.sin, m_kl_alu_vif.sout);
+			if( inMonitor.is_ctl_frame_inside()) begin
+				if(inMonitor.is_first_ctl_frame_at_index(8)) begin
+					for(int i = 0; i < 4; i++) begin
+						tmp = inMonitor.pop_front();
+						m_collected_item.B[31-8*i -:8] = tmp[7:0];
+					end
+			
+					for(int i = 0; i < 4; i++) begin
+						tmp = inMonitor.pop_front();
+						m_collected_item.A[31-8*i -:8] = tmp[7:0];
+					end
+					tmp = inMonitor.pop_front();
+					crc = tmp[3:0];
+					expected_crc = nextCRC4_D68({m_collected_item.B, m_collected_item.A, 1'b1, tmp[6:4]});
+				
+					if(crc == expected_crc)
+						m_collected_item.op = op2enum(tmp[6:4]);
+					else 
+						m_collected_item.op = crc_err_op;
+					
+					$display("MONITOR: sening seq 1");
+					`uvm_info(get_full_name(), $sformatf("Item collected :\n%s", m_collected_item.sprint()), UVM_MEDIUM)
+					m_collected_item_port.write(m_collected_item);
+					if (m_config_obj.m_checks_enable)
+						perform_item_checks();
+					
+				end
+				else begin 
+					
+					while(! inMonitor.is_ctl_frame(0)) begin
+						tmp = inMonitor.pop_front();
+					end
+					
+					tmp = inMonitor.pop_front();
+					m_collected_item.op = data_err_op;
+					$display("MONITOR: sening seq 2");
+					`uvm_info(get_full_name(), $sformatf("Item collected :\n%s", m_collected_item.sprint()), UVM_MEDIUM)
+					m_collected_item_port.write(m_collected_item);
+					if (m_config_obj.m_checks_enable)
+						perform_item_checks();
+		
+				end
+			end
 
-			`uvm_info(get_full_name(), $sformatf("Item collected :\n%s", m_collected_item.sprint()), UVM_MEDIUM)
 
-			m_collected_item_port.write(m_collected_item);
 
-			if (m_config_obj.m_checks_enable)
-				perform_item_checks();
+//			`uvm_info(get_full_name(), $sformatf("Item collected :\n%s", m_collected_item.sprint()), UVM_MEDIUM)
+//
+//			m_collected_item_port.write(m_collected_item);
+//
+//			if (m_config_obj.m_checks_enable)
+//				perform_item_checks();
 		end
+		
+		
+		
 	endtask : collect_items
 
 	virtual protected function void perform_item_checks();

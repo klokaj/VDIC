@@ -79,7 +79,7 @@ class kl_alu_example_sequence extends kl_alu_base_sequence;
 //        end : random_loop
 	
 	
-		repeat(5000) begin
+		repeat(50) begin
 			`uvm_do_with(req,
 				{ /* TODO add constraints here*/ } );
 			get_response(rsp);

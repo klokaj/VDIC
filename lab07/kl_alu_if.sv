@@ -31,7 +31,7 @@ interface kl_alu_if(clock, reset);
 	bit  	 sin;	// mtm_Alu serial in
 	wire  	 sout;	// mtm_Alu serial out	
 	//bit 	 clk;
-	//bit 	 reset_n;
+	wire	 reset_n;
 	
 
 	
@@ -39,7 +39,7 @@ interface kl_alu_if(clock, reset);
 	
 	assign clk = clock;
 	//assign clock = clk;
-	//assign reset = !reset_n;
+	assign reset_n = reset;
 	
 	
 
@@ -96,13 +96,7 @@ interface kl_alu_if(clock, reset);
 			 @(negedge clk);
 	endtask
 
-	function operation_t op2enum(bit[2:0] op);
-		operation_t opi;
-		if( ! $cast(opi, op) )
-			$fatal(1, "Illegal operation on op bus");
-		
-		return opi;
-	endfunction :op2enum
+
 
 
 //	//You can add covergroups in interfaces

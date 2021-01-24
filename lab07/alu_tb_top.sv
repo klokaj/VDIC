@@ -27,7 +27,7 @@ module alu_tb_top;
 
 	// TODO instantiate the DUT
 
-	mtm_Alu DUT( .clk(vif.clk), .rst_n(vif.reset), .sin(vif.sin), .sout(vif.sout));
+	mtm_Alu DUT( .clk(vif.clk), .rst_n(vif.reset_n), .sin(vif.sin), .sout(vif.sout));
 
 	initial begin
 		$display("Check if create a driver");

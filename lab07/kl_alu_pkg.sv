@@ -44,6 +44,99 @@ package kl_alu_pkg;
 	} result_s;
 	
 	
+	
+class SerialMonitor;
+	bit capturing;
+	int capturing_ctr;
+	bit [10:0] captured_data;
+	bit[8:0] q [$];
+	
+	function new();
+		capturing = 0;
+		capturing_ctr = 0;
+		captured_data = 0;
+		q = {};
+	endfunction
+	
+	function void sample(bit state, bit rst_n);
+		if((capturing == 1) | (state == 0)) begin
+			capturing = 1;
+			captured_data[10 - capturing_ctr] = state;
+			capturing_ctr++;
+
+			if(capturing_ctr > 10) begin
+				capturing_ctr = 0;
+				capturing = 0;
+				q.push_back(captured_data[9:1]);
+			end
+		end
+		else begin
+			capturing = 0;
+			capturing_ctr = 0;
+		end
+		
+		if(rst_n == 0) begin
+			capturing = 0;
+			q.delete();
+			capturing_ctr = 0;
+			captured_data = 0;
+		end
+	endfunction
+
+
+	function bit is_data_frame(int index);
+		bit [8:0] tmp;
+		if(index > q.size()) return 0;
+		tmp = q[index];
+		return !tmp[8];
+	endfunction
+
+	function int get_lenght();
+		return q.size();
+	endfunction
+	
+	function bit[8:0] pop_front();
+		return q.pop_front();
+	endfunction
+
+	function bit is_ctl_frame(int index);
+		bit [8:0] tmp;
+		if(index > q.size()) return 0;
+		tmp = q[index];
+		return tmp[8];
+	endfunction
+
+	function bit is_ctl_frame_before_index(int index);
+		//int j = (index-1 > q.size()) ? q.size() : index-1;
+		int j;
+		if(q.size > index) j = index;
+		else j = q.size;
+		
+		for(int i = 0; i < j; i++)begin
+			if(is_ctl_frame(i)) return 1;	
+		end
+		return 0;
+	endfunction
+	
+	function bit is_first_ctl_frame_at_index(int index);
+		if(is_ctl_frame(index) == 0) return 0;
+		if(is_ctl_frame_before_index(index-1)) return 0;
+		return 1;
+	endfunction
+	
+	function bit is_ctl_frame_inside();
+		return is_ctl_frame_before_index(q.size());
+	endfunction
+endclass
+	
+function operation_t op2enum(bit[2:0] op);
+	operation_t opi;
+	if( ! $cast(opi, op) )
+		$fatal(1, "Illegal operation on op bus");
+	
+	return opi;
+endfunction :op2enum	
+	
 //CRC_calculation function
 function [2:0] nextCRC3_D37( bit[37:0] Data);
     reg [2:0] crc;
