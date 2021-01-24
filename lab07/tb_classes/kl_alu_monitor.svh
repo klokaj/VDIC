@@ -121,8 +121,7 @@ class kl_alu_monitor extends uvm_monitor;
 						m_collected_item.op = op2enum(tmp[6:4]);
 					else 
 						m_collected_item.op = crc_err_op;
-					
-					$display("MONITOR: sening seq 1");
+
 					`uvm_info(get_full_name(), $sformatf("Item collected :\n%s", m_collected_item.sprint()), UVM_MEDIUM)
 					m_collected_item_port.write(m_collected_item);
 					if (m_config_obj.m_checks_enable)
@@ -137,7 +136,6 @@ class kl_alu_monitor extends uvm_monitor;
 					
 					tmp = inMonitor.pop_front();
 					m_collected_item.op = data_err_op;
-					$display("MONITOR: sening seq 2");
 					`uvm_info(get_full_name(), $sformatf("Item collected :\n%s", m_collected_item.sprint()), UVM_MEDIUM)
 					m_collected_item_port.write(m_collected_item);
 					if (m_config_obj.m_checks_enable)

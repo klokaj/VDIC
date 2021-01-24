@@ -91,7 +91,6 @@ interface kl_alu_if(clock, reset);
 			tx_data(q.pop_front());
 		end
 		tx_command(q.pop_front());
-		$display("sending packet");
 		repeat (100) 
 			 @(negedge clk);
 	endtask

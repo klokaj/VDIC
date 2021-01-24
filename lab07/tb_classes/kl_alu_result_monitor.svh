@@ -102,6 +102,7 @@ class kl_alu_result_monitor extends uvm_monitor;
 			outMonitor.sample(m_kl_alu_vif.sout, m_kl_alu_vif.reset_n);
 			
 			if(outMonitor.get_lenght() >= 5) begin
+				m_collected_result_item = new();
 				for(int i = 0; i < 4; i++) begin
 					tmp = outMonitor.pop_front();
 					m_collected_result_item.C[31-8*i -:8] = tmp[7:0];
@@ -122,15 +123,17 @@ class kl_alu_result_monitor extends uvm_monitor;
 			end
 			else if(outMonitor.get_lenght() == 1) begin
 				if(outMonitor.is_ctl_frame_inside()) begin
+					m_collected_result_item = new();
+					
 					tmp = outMonitor.pop_front();
 					m_collected_result_item.error = 1;
 					m_collected_result_item.err_flag.data = tmp[3];
 					m_collected_result_item.err_flag.crc = tmp[2];
 					m_collected_result_item.err_flag.op = tmp[1];
 					
-				`uvm_info(get_full_name(), $sformatf("Item collected :\n%s", m_collected_result_item.sprint()), UVM_MEDIUM)
-				m_collected_result_item_port.write(m_collected_result_item);
-				if (m_config_obj.m_checks_enable)
+					`uvm_info(get_full_name(), $sformatf("Item collected :\n%s", m_collected_result_item.sprint()), UVM_MEDIUM)
+					m_collected_result_item_port.write(m_collected_result_item);
+					if (m_config_obj.m_checks_enable)
 					perform_item_checks();
 		
 				end

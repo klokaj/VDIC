@@ -64,7 +64,7 @@ class kl_alu_example_sequence extends kl_alu_base_sequence;
 
 	kl_alu_item command;
 	virtual task body();
-		$display("kl_alu_example_sequence body start");
+	
 //        `uvm_info("SEQ_RANDOM","",UVM_MEDIUM)
 //        
 //       command = sequence_item::type_id::create("command");
@@ -74,7 +74,6 @@ class kl_alu_example_sequence extends kl_alu_base_sequence;
 ////         start_item(command);
 ////         assert(command.randomize());
 ////         finish_item(command);
-//	        $display("sending");
 //           `uvm_rand_send(command)
 //        end : random_loop
 	
@@ -84,8 +83,7 @@ class kl_alu_example_sequence extends kl_alu_base_sequence;
 				{ /* TODO add constraints here*/ } );
 			get_response(rsp);
 		end
-		
-		$display("kl_alu_example_sequence body end");
+	
 	//	get_response(rsp);
 	endtask : body
 
@@ -103,7 +101,7 @@ class kl_alu_minmax_sequence extends kl_alu_base_sequence;
 
 	task body();
 		`uvm_info("SEQ_MINMAX", "", UVM_MEDIUM);
-		`uvm_do_with(req, {op == rst_op;});
+		//`uvm_do_with(req, {op == rst_op;});
 		repeat(100) begin
 			`uvm_do_with(req, { A dist {32'h00000000:=1, 32'hFFFFFFFF:=1};
                       B dist {32'h00000000:=1, 32'hFFFFFFFF:=1}; });

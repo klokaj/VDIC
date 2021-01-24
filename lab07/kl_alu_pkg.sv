@@ -16,9 +16,8 @@ package kl_alu_pkg;
        	
        	op_err_op = 3'b011,
        	crc_err_op = 3'b110,
-       	data_err_op = 3'b010,
-       	
-     	rst_op = 3'b111
+       	data_err_op = 3'b010
+  
     } operation_t;
 	
 	typedef struct packed {

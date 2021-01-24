@@ -52,9 +52,8 @@ class kl_alu_coverage_collector extends uvm_component;
 	     bins A2_twoops[] = ( add_op, or_op, and_op, sub_op [* 2]);
 		  
 		  
-	     bins A3_op_after_reset[] = ( rst_op => add_op, or_op, and_op, sub_op);
-		 bins A4_op_after_err[] = (crc_err_op, data_err_op, op_err_op => add_op, or_op, and_op, sub_op);
-		 bins A5_err_ops[] = {crc_err_op, data_err_op, op_err_op};
+		 bins A3_op_after_err[] = (crc_err_op, data_err_op, op_err_op => add_op, or_op, and_op, sub_op);
+		 bins A4_err_ops[] = {crc_err_op, data_err_op, op_err_op};
 		  
 	  }
 	endgroup
@@ -63,7 +62,7 @@ class kl_alu_coverage_collector extends uvm_component;
 		option.per_instance = 1;
 	  	option.name = "cg_zeros_or_ones_on_ops";
 	  	all_ops : coverpoint op_set {
-	    	ignore_bins null_ops = {op_err_op, data_err_op, crc_err_op,  rst_op};
+	    	ignore_bins null_ops = {op_err_op, data_err_op, crc_err_op};
 	  	}
 	  	a_leg: coverpoint A {
 	     	bins zeros = {'h00_00_00_00};
@@ -132,8 +131,6 @@ class kl_alu_coverage_collector extends uvm_component;
 	endfunction : build_phase
 
 	function void write_collected_item(kl_alu_item item);
-		
-		$display("COVERAGE: Sampling data");
 		m_collected_item = item;
 		A = item.A;
 		B = item.B;

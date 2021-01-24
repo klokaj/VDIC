@@ -86,11 +86,10 @@ class kl_alu_scoreboard extends uvm_subscriber #(kl_alu_result_item);
 	    kl_alu_item cmd;
 	    kl_alu_result_item predicted;
 	
-		do begin
-			if(!cmd_f.try_get(cmd))
-				$fatal(1, "Missing command in self checker");
-		end
-		while(cmd.op == rst_op);
+
+		if(!cmd_f.try_get(cmd))
+			$fatal(1, "Missing command in self checker");
+
 			
 		predicted = predict_result(cmd);
 		

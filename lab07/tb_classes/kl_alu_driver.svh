@@ -40,13 +40,12 @@ class kl_alu_driver extends uvm_driver #(kl_alu_item);
 	endfunction: build_phase
 
 	virtual task run_phase(uvm_phase phase);
-		$display("driver, wait for reset");
 		
 		// Driving should be triggered by an initial reset pulse
 		@(negedge m_kl_alu_vif.reset)
 			do @(posedge m_kl_alu_vif.clock);
 			while(m_kl_alu_vif.reset!==1);
-		$display("DRIVER, reseted -------------------------");
+			
 		// Start driving
 		get_and_drive();
 	endtask : run_phase
@@ -56,7 +55,6 @@ class kl_alu_driver extends uvm_driver #(kl_alu_item);
 		process rst_mon_thread; // reset monitor thread
 
 		forever begin
-			$display("driver, get and drive");
 			// Don't drive during reset
 			while(m_kl_alu_vif.reset!==1) @(posedge m_kl_alu_vif.clock);
 
@@ -64,7 +62,6 @@ class kl_alu_driver extends uvm_driver #(kl_alu_item);
 			seq_item_port.get_next_item(req);
 			$cast(rsp, req.clone());
 			rsp.set_id_info(req);
-			$display("Get and drive task");
 			// Drive current transaction
 			fork
 				// Drive the transaction
@@ -109,40 +106,33 @@ class kl_alu_driver extends uvm_driver #(kl_alu_item);
 		bit [3:0] crc, tmp; 
 		bit [7:0] q[$], del_data;
 		
+
+		q.delete();
+        q.push_back(item.B[31:24]);
+        q.push_back(item.B[23:16]);
+        q.push_back(item.B[15:8]);
+        q.push_back(item.B[7:0]);
+        
+        q.push_back(item.A[31:24]);
+        q.push_back(item.A[23:16]);
+        q.push_back(item.A[15:8]);
+        q.push_back(item.A[7:0]);
 		
-		$display("Driving item");
-		if(item.op == rst_op) begin 
-			//$display("DRIVER, reseting_ALU");
-			m_kl_alu_vif.reset_alu();	
-		end
-		else begin
-			q.delete();
-	        q.push_back(item.B[31:24]);
-	        q.push_back(item.B[23:16]);
-	        q.push_back(item.B[15:8]);
-	        q.push_back(item.B[7:0]);
-	        
-	        q.push_back(item.A[31:24]);
-	        q.push_back(item.A[23:16]);
-	        q.push_back(item.A[15:8]);
-	        q.push_back(item.A[7:0]);
-			
-			
-			crc = nextCRC4_D68({item.B, item.A, 1'b1, item.op});
-	     	if(item.op == crc_err_op) begin
-			    tmp  = $random;
-			    while(crc == tmp)
-				    tmp = $random;
-			    crc = tmp;
-	     	end 
-	     	else if(item.op == data_err_op) begin
-		    	{tmp, crc} = q.pop_front();
-		    end
-	     		
-	     	q.push_back({1'b0, item.op, crc});  
-	        //$display("DRIVER: A %d %s B %d", command.A, command.op.name(), command.B);
-	        m_kl_alu_vif.tx_packet(q);
-		end
+		
+		crc = nextCRC4_D68({item.B, item.A, 1'b1, item.op});
+     	if(item.op == crc_err_op) begin
+		    tmp  = $random;
+		    while(crc == tmp)
+			    tmp = $random;
+		    crc = tmp;
+     	end 
+     	else if(item.op == data_err_op) begin
+	    	{tmp, crc} = q.pop_front();
+	    end
+     		
+     	q.push_back({1'b0, item.op, crc});  
+        m_kl_alu_vif.tx_packet(q);
+
 	endtask : drive_item
 
 endclass : kl_alu_driver
